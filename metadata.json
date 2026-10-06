@@ -1,0 +1,6 @@
+{
+  "name": "FreelasHub - Postagens Freelancer Diárias com Bônus em Vídeo",
+  "description": "Plataforma de postagens diárias de tarefas freelancer com bônus em vídeo. Grave tarefas profissionais em primeira pessoa (POV) no trabalho ou em casa e receba via PIX.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

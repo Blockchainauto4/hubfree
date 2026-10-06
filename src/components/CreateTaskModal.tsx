@@ -66,13 +66,13 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl my-auto sm:my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[92dvh] sm:max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/70">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/70 shrink-0">
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-[#00e575]" />
-            <h3 className="text-lg font-bold text-white font-display">
+            <Building2 className="w-5 h-5 text-[#00e575] shrink-0" />
+            <h3 className="text-base sm:text-lg font-bold text-white font-display">
               Publicar Postagem Freelancer Diária
             </h3>
           </div>
@@ -86,7 +86,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 max-h-[78vh] overflow-y-auto space-y-5">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 flex-1">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2 space-y-1.5">
               <label className="text-xs font-semibold text-slate-300">
@@ -98,7 +98,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex: Gravação de Diagnóstico com Scanner Automotivo OBD2"
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
               />
             </div>
 
@@ -112,7 +112,7 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 placeholder="Ex: VisionAI Brasil, AutoData Labs"
-                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
               />
             </div>
 
@@ -297,17 +297,17 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
           </div>
 
           {/* Submit Action */}
-          <div className="pt-4 border-t border-white/10 flex items-center justify-end gap-3">
+          <div className="pt-4 border-t border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 shrink-0">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer"
+              className="px-4 py-3 sm:py-2 text-xs font-semibold text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer text-center"
             >
               Cancelar
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/25 cursor-pointer"
+              className="px-6 py-3.5 sm:py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/25 cursor-pointer text-center active:scale-98"
             >
               Publicar no Feed Diário
             </button>

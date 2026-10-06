@@ -60,17 +60,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-md my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden text-slate-100">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-md my-auto sm:my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[92dvh] sm:max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/70">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/70 shrink-0">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#00e575] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-[#00e575] flex items-center justify-center shrink-0">
               <svg viewBox="0 0 24 24" className="w-4 h-4 text-slate-950 fill-current">
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
               </svg>
             </div>
-            <h3 className="text-base font-bold text-white font-display">
+            <h3 className="text-sm sm:text-base font-bold text-white font-display">
               {mode === 'register' ? 'Criar Conta FreelaHub' : 'Entrar na FreelaHub'}
             </h3>
           </div>
@@ -84,7 +84,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
         </div>
 
         {/* Form Body */}
-        <div className="p-6">
+        <div className="p-4 sm:p-6 overflow-y-auto flex-1">
           {isSuccess ? (
             <div className="py-8 text-center space-y-3">
               <div className="w-14 h-14 rounded-full bg-[#00e575]/20 text-[#00e575] flex items-center justify-center mx-auto">
@@ -141,7 +141,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Ex: Carlos Ferreira"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                   />
                 </div>
               )}
@@ -154,7 +154,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="seu@email.com"
-                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                  className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                 />
               </div>
 
@@ -167,7 +167,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                       value={whatsapp}
                       onChange={(e) => setWhatsapp(e.target.value)}
                       placeholder="(11) 98765-4321"
-                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                      className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                     />
                   </div>
 
@@ -179,7 +179,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                         value={pixKey}
                         onChange={(e) => setPixKey(e.target.value)}
                         placeholder="CPF, e-mail ou celular"
-                        className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                        className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                       />
                     </div>
                   )}

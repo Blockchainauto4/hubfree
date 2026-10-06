@@ -123,32 +123,32 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[85vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-2xl my-auto sm:my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[92dvh] sm:max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#00c860] via-[#00ff87] to-cyan-400 p-0.5 shadow-lg shadow-[#00e575]/20 flex items-center justify-center">
+        <div className="px-4 sm:px-5 py-3 sm:py-4 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-slate-950 via-slate-900 to-emerald-950/40 shrink-0">
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-[#00c860] via-[#00ff87] to-cyan-400 p-0.5 shadow-lg shadow-[#00e575]/20 flex items-center justify-center shrink-0">
               <div className="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-[#00e575]" />
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#00e575]" />
               </div>
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-bold text-white font-display">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h3 className="text-xs sm:text-base font-bold text-white font-display truncate max-w-[140px] sm:max-w-none">
                   {config.assistantName || 'Assistente IA Gemini'}
                 </h3>
-                <span className="text-[10px] font-mono bg-[#00e575]/15 text-[#00e575] border border-[#00e575]/30 px-1.5 py-0.2 rounded font-bold">
+                <span className="text-[9px] sm:text-[10px] font-mono bg-[#00e575]/15 text-[#00e575] border border-[#00e575]/30 px-1.5 py-0.2 rounded font-bold shrink-0">
                   {config.model}
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Especialista em tarefas POV, aprovação de bônus e suporte da plataforma
+              <p className="text-[10px] sm:text-[11px] text-slate-400 truncate max-w-[200px] sm:max-w-none">
+                Especialista em tarefas POV, aprovação de bônus e suporte
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1 shrink-0">
             {onOpenAdmin && (
               <button
                 type="button"
@@ -160,7 +160,7 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
                 className="p-1.5 rounded-lg text-slate-300 hover:text-[#00e575] hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-1 text-xs"
               >
                 <Sliders className="w-4 h-4" />
-                <span className="hidden sm:inline">Configurar IA</span>
+                <span className="hidden sm:inline">Configurar</span>
               </button>
             )}
             <button
@@ -182,27 +182,27 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
         </div>
 
         {/* Message Log */}
-        <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-3.5 bg-[#090d10] text-xs sm:text-sm">
+        <div className="flex-1 p-3.5 sm:p-5 overflow-y-auto space-y-3 bg-[#090d10] text-xs sm:text-sm">
           {messages.map((m, idx) => (
             <div
               key={idx}
-              className={`flex gap-2.5 max-w-[88%] sm:max-w-[80%] ${
+              className={`flex gap-2 sm:gap-2.5 max-w-[90%] sm:max-w-[80%] ${
                 m.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
               }`}
             >
               <div
-                className={`w-7 h-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold ${
+                className={`w-6 h-6 sm:w-7 sm:h-7 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold ${
                   m.sender === 'user'
                     ? 'bg-[#00e575] text-slate-950'
                     : 'bg-slate-800 text-[#00e575] border border-white/10'
                 }`}
               >
-                {m.sender === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                {m.sender === 'user' ? <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
               </div>
 
               <div className="flex flex-col space-y-1">
                 <div
-                  className={`p-3.5 rounded-2xl leading-relaxed ${
+                  className={`p-3 sm:p-3.5 rounded-2xl leading-relaxed text-xs sm:text-sm ${
                     m.sender === 'user'
                       ? 'bg-[#00e575] text-slate-950 font-medium rounded-tr-none shadow-md shadow-[#00e575]/15'
                       : 'bg-slate-900 border border-white/10 text-slate-200 rounded-tl-none'
@@ -211,7 +211,7 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
                   <p className="whitespace-pre-line">{m.text}</p>
                 </div>
                 <span
-                  className={`text-[10px] text-slate-500 font-mono ${
+                  className={`text-[9px] sm:text-[10px] text-slate-500 font-mono ${
                     m.sender === 'user' ? 'text-right' : 'text-left'
                   }`}
                 >
@@ -222,11 +222,11 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
           ))}
 
           {isLoading && (
-            <div className="flex gap-2.5 mr-auto max-w-[80%]">
-              <div className="w-7 h-7 rounded-lg shrink-0 bg-slate-800 text-[#00e575] border border-white/10 flex items-center justify-center">
-                <Bot className="w-4 h-4" />
+            <div className="flex gap-2 sm:gap-2.5 mr-auto max-w-[85%]">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-lg shrink-0 bg-slate-800 text-[#00e575] border border-white/10 flex items-center justify-center">
+                <Bot className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </div>
-              <div className="p-3.5 rounded-2xl bg-slate-900 border border-white/10 text-slate-300 rounded-tl-none flex items-center gap-2 text-xs">
+              <div className="p-3 rounded-2xl bg-slate-900 border border-white/10 text-slate-300 rounded-tl-none flex items-center gap-2 text-xs">
                 <div className="w-2 h-2 rounded-full bg-[#00e575] animate-ping" />
                 <span>O Gemini está pensando...</span>
               </div>
@@ -237,13 +237,13 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
         </div>
 
         {/* Quick Suggestion Chips */}
-        <div className="px-4 py-2 bg-slate-950 border-t border-white/5 flex gap-1.5 overflow-x-auto text-[11px]">
+        <div className="px-3 sm:px-4 py-2 bg-slate-950 border-t border-white/5 flex gap-1.5 overflow-x-auto text-[10px] sm:text-[11px] no-scrollbar shrink-0">
           {quickPrompts.map((qp, i) => (
             <button
               key={i}
               type="button"
               onClick={() => handleSend(qp)}
-              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#00e575]/15 hover:text-[#00e575] border border-white/5 text-slate-300 transition-colors cursor-pointer"
+              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-[#00e575]/15 hover:text-[#00e575] border border-white/5 text-slate-300 transition-colors cursor-pointer shrink-0 active:scale-95"
             >
               {qp}
             </button>
@@ -256,21 +256,21 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
             e.preventDefault();
             handleSend();
           }}
-          className="p-3 sm:p-4 bg-slate-950 border-t border-white/10 flex items-center gap-2"
+          className="p-2.5 sm:p-4 bg-slate-950 border-t border-white/10 flex items-center gap-2 shrink-0"
         >
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Pergunte ao Gemini sobre tarefas, bônus e equipamentos..."
-            className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none focus:border-[#00e575] focus:ring-1 focus:ring-[#00e575]"
+            placeholder="Pergunte sobre tarefas, bônus e equipamentos..."
+            className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-3.5 sm:px-4 py-2.5 text-base sm:text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00e575] focus:ring-1 focus:ring-[#00e575]"
           />
           <button
             type="submit"
             disabled={!input.trim() || isLoading}
-            className="p-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-[#00e575] hover:bg-[#00ff87] disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#00e575]/25 flex items-center gap-1.5 cursor-pointer"
+            className="p-2.5 sm:px-4 sm:py-2.5 rounded-xl bg-[#00e575] hover:bg-[#00ff87] disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-bold text-xs sm:text-sm transition-all shadow-md shadow-[#00e575]/25 flex items-center justify-center gap-1.5 cursor-pointer shrink-0 active:scale-95"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline">Enviar</span>
           </button>
         </form>

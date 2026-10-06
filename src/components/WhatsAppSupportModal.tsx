@@ -49,29 +49,29 @@ export const WhatsAppSupportModal: React.FC = () => {
   return (
     <>
       {/* Floating Button exactly matching screenshot */}
-      <div className="fixed bottom-6 right-6 z-40 flex flex-col items-center">
+      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-center">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-14 h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xl shadow-[#25D366]/30 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-[#25D366] hover:bg-[#20ba59] text-white shadow-xl shadow-[#25D366]/30 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer"
           aria-label="Abrir Suporte WhatsApp"
         >
           {isOpen ? (
-            <X className="w-7 h-7" />
+            <X className="w-6 h-6 sm:w-7 sm:h-7" />
           ) : (
-            <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current text-white" aria-hidden="true">
+            <svg viewBox="0 0 24 24" className="w-7 h-7 sm:w-8 sm:h-8 fill-current text-white" aria-hidden="true">
               <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.07c-.24.67-1.39 1.27-1.92 1.35-.5.08-1.14.12-3.69-.93-3.26-1.34-5.35-4.66-5.51-4.88-.16-.22-1.32-1.75-1.32-3.34 0-1.59.83-2.37 1.13-2.69.29-.32.65-.4.87-.4.21 0 .43.01.62.02.2.01.47-.08.73.55.27.65.92 2.24 1 2.4.08.16.13.35.03.56-.11.22-.16.35-.32.54-.16.19-.34.42-.48.56-.16.16-.33.33-.14.65.19.32.84 1.38 1.8 2.24 1.24 1.1 2.28 1.45 2.61 1.61.32.16.51.13.7-.08.19-.22.81-.95 1.03-1.27.22-.32.43-.27.73-.16.29.11 1.87.88 2.19 1.04.32.16.54.24.62.38.08.14.08.81-.16 1.48z" />
             </svg>
           )}
         </button>
-        <span className="text-[11px] font-bold text-slate-300 mt-1 drop-shadow-md">
+        <span className="text-[10px] sm:text-[11px] font-bold text-slate-300 mt-1 drop-shadow-md">
           Suporte
         </span>
       </div>
 
       {/* Interactive Chat Popup */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 rounded-2xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm rounded-2xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
           <div className="bg-[#128C7E] px-4 py-3 flex items-center justify-between text-white">
             <div className="flex items-center gap-2.5">

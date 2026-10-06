@@ -8,9 +8,9 @@ interface FooterProps {
 
 export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTask }) => {
   return (
-    <footer className="border-t border-white/10 bg-slate-950 py-12 text-slate-400 text-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+    <footer className="border-t border-white/10 bg-slate-950 py-8 sm:py-12 text-slate-400 text-xs">
+      <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-8 sm:mb-10">
           {/* Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
@@ -23,7 +23,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTa
                 Freela<span className="text-[#00e575]">Hub</span>
               </span>
             </div>
-            <p className="text-slate-400 text-xs leading-relaxed">
+            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
               Plataforma brasileira de postagens freelancer diárias para gravação de tarefas em primeira pessoa (POV) com bônus em vídeo e saques via PIX.
             </p>
           </div>
@@ -33,7 +33,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTa
             <div className="font-bold text-white uppercase tracking-wider text-[11px]">
               Para Freelancers
             </div>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2 text-xs">
               <li>
                 <a href="#vagas" className="hover:text-[#00e575] transition-colors">
                   Vagas Diárias Abertas
@@ -62,7 +62,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTa
             <div className="font-bold text-white uppercase tracking-wider text-[11px]">
               Para Empresas & IA
             </div>
-            <ul className="space-y-1.5">
+            <ul className="space-y-2 text-xs">
               <li>
                 <button
                   type="button"
@@ -95,23 +95,25 @@ export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTa
               Pagamentos Seguros
             </div>
             <p className="text-slate-400 text-xs leading-relaxed">
-              Processamento instantâneo via Banco Central (PIX) diretamente na sua chave bancária cadastrada.
+              Processamento instantâneo via Banco Central (PIX) diretamente na sua chave cadastrada.
             </p>
             <div className="flex items-center gap-1.5 text-emerald-400 pt-1">
-              <ShieldCheck className="w-4 h-4" />
+              <ShieldCheck className="w-4 h-4 shrink-0" />
               <span className="font-semibold text-[11px]">Auditoria Humana & Confiável</span>
             </div>
           </div>
         </div>
 
-        <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 text-center sm:text-left">
           <div>
-            © {new Date().getFullYear()} FreelasHub. Todos os direitos reservados.
+            © {new Date().getFullYear()} FreelaHub. Todos os direitos reservados.
           </div>
-          <div className="flex gap-4">
-            <span className="hover:text-slate-300 cursor-pointer">Termos de Uso</span>
-            <span className="hover:text-slate-300 cursor-pointer">Privacidade</span>
-            <span className="hover:text-slate-300 cursor-pointer">Suporte ao Freelancer</span>
+          <div className="flex items-center gap-3">
+            <span>Privacidade</span>
+            <span aria-hidden="true">·</span>
+            <span>Termos de Uso</span>
+            <span aria-hidden="true">·</span>
+            <span className="text-emerald-400">Deploy Vercel Ready</span>
           </div>
         </div>
       </div>

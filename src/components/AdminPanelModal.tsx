@@ -114,25 +114,25 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/85 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-4xl my-auto sm:my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[92dvh] sm:max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/80">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/80 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold">
+            <div className="w-8 h-8 rounded-xl bg-purple-500/20 border border-purple-500/30 text-purple-400 flex items-center justify-center font-bold shrink-0">
               <Sliders className="w-4 h-4" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white font-display">
+                <h3 className="text-sm sm:text-base font-bold text-white font-display">
                   Área Administrativa & Controle da IA
                 </h3>
                 <span className="text-[10px] bg-emerald-950 border border-[#00e575]/40 text-[#00e575] font-semibold px-2 py-0.5 rounded">
                   Ao Vivo
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400">
-                Ajuste instruções do Gemini, regras de bônus e valores sem precisar alterar código ou reiniciar o applet.
+              <p className="text-[10px] sm:text-[11px] text-slate-400 leading-tight">
+                Ajuste instruções do Gemini, regras de bônus e valores em tempo real.
               </p>
             </div>
           </div>
@@ -147,49 +147,49 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-white/10 bg-slate-950/40 px-6 gap-6 text-xs sm:text-sm font-semibold">
+        <div className="flex border-b border-white/10 bg-slate-950/40 px-3 sm:px-6 gap-2 sm:gap-6 text-xs sm:text-sm font-semibold overflow-x-auto whitespace-nowrap no-scrollbar shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('ai')}
-            className={`py-3 border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
+            className={`py-3 border-b-2 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'ai'
                 ? 'border-[#00e575] text-[#00e575]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Configurações do Gemini IA</span>
+            <Sparkles className="w-4 h-4 shrink-0" />
+            <span>Configurações Gemini</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('business')}
-            className={`py-3 border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
+            className={`py-3 border-b-2 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'business'
                 ? 'border-[#00e575] text-[#00e575]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <DollarSign className="w-4 h-4" />
+            <DollarSign className="w-4 h-4 shrink-0" />
             <span>Regras de Negócio & PIX</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('moderation')}
-            className={`py-3 border-b-2 flex items-center gap-2 transition-all cursor-pointer ${
+            className={`py-3 border-b-2 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shrink-0 ${
               activeTab === 'moderation'
                 ? 'border-[#00e575] text-[#00e575]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <FileCheck className="w-4 h-4" />
-            <span>Auditoria de Vídeos ({submissions.length})</span>
+            <FileCheck className="w-4 h-4 shrink-0" />
+            <span>Auditoria ({submissions.length})</span>
           </button>
         </div>
 
         {/* Content Body */}
-        <form onSubmit={handleSaveAll} className="flex-1 overflow-y-auto p-6 space-y-6">
+        <form onSubmit={handleSaveAll} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 sm:space-y-6">
           {savedSuccess && (
             <div className="p-3.5 rounded-xl bg-emerald-950/60 border border-[#00e575]/40 text-emerald-300 text-xs flex items-center gap-2 animate-in fade-in duration-200">
               <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
@@ -486,24 +486,24 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           )}
 
           {/* Footer Save Actions */}
-          <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-            <span className="text-[11px] text-slate-400">
-              As alterações surtem efeito instantâneo na aplicação e nas respostas do Gemini.
+          <div className="pt-4 border-t border-white/10 flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 shrink-0">
+            <span className="text-[11px] text-slate-400 text-center sm:text-left">
+              As alterações surtem efeito instantâneo em toda a plataforma.
             </span>
 
-            <div className="flex gap-2.5">
+            <div className="flex gap-2 sm:gap-2.5">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-colors cursor-pointer"
+                className="flex-1 sm:flex-initial px-4 py-3 sm:py-2 text-xs font-semibold text-slate-300 hover:text-white rounded-xl transition-colors cursor-pointer text-center"
               >
                 Fechar
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/25 flex items-center gap-1.5 cursor-pointer"
+                className="flex-1 sm:flex-initial px-5 py-3 sm:py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/25 flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
               >
-                <Save className="w-4 h-4" />
+                <Save className="w-4 h-4 shrink-0" />
                 <span>Salvar Configurações</span>
               </button>
             </div>

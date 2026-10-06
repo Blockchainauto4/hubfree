@@ -32,13 +32,13 @@ export const FAQSection: React.FC = () => {
   ];
 
   return (
-    <section id="faq" className="py-16 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="text-center space-y-3 mb-10">
+    <section id="faq" className="py-10 sm:py-16 max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8">
+      <div className="text-center space-y-2.5 sm:space-y-3 mb-8 sm:mb-10">
         <span className="text-xs font-bold text-[#00e575] uppercase tracking-wider flex items-center justify-center gap-1.5">
-          <HelpCircle className="w-3.5 h-3.5" />
-          Perguntas Frequentes
+          <HelpCircle className="w-3.5 h-3.5 shrink-0" />
+          <span>Perguntas Frequentes</span>
         </span>
-        <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white font-display">
           Dúvidas sobre o Filmou Ganhou
         </h2>
         <p className="text-xs sm:text-sm text-slate-400">
@@ -46,7 +46,7 @@ export const FAQSection: React.FC = () => {
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2.5 sm:space-y-3">
         {faqs.map((faq, index) => {
           const isOpen = openIndex === index;
           return (
@@ -57,9 +57,9 @@ export const FAQSection: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setOpenIndex(isOpen ? null : index)}
-                className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-white/5 transition-colors"
+                className="w-full min-h-[48px] px-4 sm:px-5 py-3.5 sm:py-4 text-left flex items-center justify-between gap-3 sm:gap-4 cursor-pointer hover:bg-white/5 transition-colors"
               >
-                <span className="text-sm font-bold text-white font-display">
+                <span className="text-xs sm:text-sm font-bold text-white font-display">
                   {faq.q}
                 </span>
                 <ChevronDown
@@ -70,7 +70,7 @@ export const FAQSection: React.FC = () => {
               </button>
 
               {isOpen && (
-                <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
+                <div className="px-4 sm:px-5 pb-4 sm:pb-5 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-white/5">
                   {faq.a}
                 </div>
               )}

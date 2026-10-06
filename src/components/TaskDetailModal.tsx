@@ -143,15 +143,15 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
-      <div className="relative w-full max-w-3xl my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden text-slate-100 animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+      <div className="relative w-full max-w-3xl my-auto sm:my-8 bg-slate-900 border border-white/15 rounded-2xl shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[92dvh] sm:max-h-[88vh] animate-in fade-in zoom-in-95 duration-200">
         {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/60">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-white/10 flex items-center justify-between bg-slate-950/60 shrink-0">
           <div className="flex items-center gap-2">
             <span className="text-xs font-semibold px-2.5 py-1 rounded bg-white/10 text-slate-200">
               {task.locationType === 'workplace' ? '👷 No Trabalho' : '🛋️ Em Casa'}
             </span>
-            <span className="text-xs text-slate-400 font-medium">{task.company}</span>
+            <span className="text-xs text-slate-400 font-medium truncate max-w-[140px] sm:max-w-none">{task.company}</span>
           </div>
 
           <button
@@ -164,11 +164,11 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </div>
 
         {/* Modal Navigation Tabs */}
-        <div className="flex border-b border-white/10 bg-slate-950/30 px-6 pt-3 gap-6">
+        <div className="flex border-b border-white/10 bg-slate-950/30 px-3 sm:px-6 pt-2.5 sm:pt-3 gap-2 sm:gap-6 overflow-x-auto no-scrollbar shrink-0">
           <button
             type="button"
             onClick={() => setActiveTab('instructions')}
-            className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer ${
+            className={`pb-2.5 sm:pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap shrink-0 ${
               activeTab === 'instructions'
                 ? 'border-[#00e575] text-[#00e575]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -179,16 +179,16 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           <button
             type="button"
             onClick={() => setActiveTab('submit')}
-            className={`pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+            className={`pb-2.5 sm:pb-3 text-xs sm:text-sm font-bold border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
               activeTab === 'submit'
                 ? 'border-[#00e575] text-[#00e575]'
                 : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Video className="w-4 h-4" />
-            <span>2. Enviar Gravação & Receber PIX</span>
+            <Video className="w-4 h-4 shrink-0" />
+            <span>2. Gravar & Receber PIX</span>
             {task.hasActiveBonus && (
-              <span className="bg-[#00e575] text-slate-950 text-[10px] font-extrabold px-1.5 py-0.2 rounded">
+              <span className="bg-[#00e575] text-slate-950 text-[10px] font-extrabold px-1.5 py-0.2 rounded shrink-0">
                 +R${task.videoBonus}
               </span>
             )}
@@ -196,7 +196,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 max-h-[75vh] overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6 flex-1">
           {isSuccess ? (
             <div className="py-10 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-[#00e575]/20 text-[#00e575] flex items-center justify-center mx-auto shadow-lg shadow-[#00e575]/30">
@@ -310,8 +310,8 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
               </div>
 
               {/* CTA forward */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                <div>
+              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="flex sm:flex-col justify-between items-center sm:items-start">
                   <span className="text-xs text-slate-400">Remuneração estimada:</span>
                   <div className="text-lg font-bold text-white font-mono">
                     R$ {totalCalculated.toFixed(2)}
@@ -321,7 +321,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <button
                   type="button"
                   onClick={() => setActiveTab('submit')}
-                  className="px-5 py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-md shadow-[#00e575]/25"
+                  className="w-full sm:w-auto px-5 py-3 sm:py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-[#00e575]/25 active:scale-98"
                 >
                   <span>Gravar ou Enviar Vídeo Agora</span>
                   <ArrowRight className="w-4 h-4" />
@@ -445,7 +445,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     value={freelancerName}
                     onChange={(e) => setFreelancerName(e.target.value)}
                     placeholder="Ex: Carlos Silva"
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                   />
                 </div>
 
@@ -456,7 +456,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   <select
                     value={pixType}
                     onChange={(e) => setPixType(e.target.value as any)}
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                   >
                     <option value="cpf">CPF</option>
                     <option value="email">E-mail</option>
@@ -475,14 +475,14 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     value={pixKey}
                     onChange={(e) => setPixKey(e.target.value)}
                     placeholder="Digite seu CPF, e-mail ou chave PIX..."
-                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                   />
                 </div>
               </div>
 
               {/* Summary & Submit Button */}
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                <div>
+              <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <div className="flex sm:flex-col justify-between items-center sm:items-start">
                   <div className="text-[11px] text-slate-400">Total a ser creditado:</div>
                   <div className="text-xl font-mono font-extrabold text-[#00e575]">
                     R$ {totalCalculated.toFixed(2)}
@@ -492,7 +492,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-3 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] disabled:opacity-50 rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-[#00e575]/25"
+                  className="w-full sm:w-auto px-6 py-3.5 sm:py-3 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] disabled:opacity-50 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-[#00e575]/25 active:scale-98"
                 >
                   {isSubmitting ? (
                     <>
@@ -502,7 +502,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   ) : (
                     <>
                       <span>Enviar Vídeo & Receber via PIX</span>
-                      <Zap className="w-4 h-4 fill-current" />
+                      <Zap className="w-4 h-4 fill-current shrink-0" />
                     </>
                   )}
                 </button>

@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenGemini: () => void;
   onOpenAdmin: () => void;
   onOpenDailyMissions: () => void;
+  onNavigateToCategories?: () => void;
   walletBalance: number;
   dailyMissionsCount?: number;
   currentUser?: { name: string; email: string; role: 'freelancer' | 'empresa' } | null;
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenGemini,
   onOpenAdmin,
   onOpenDailyMissions,
+  onNavigateToCategories,
   walletBalance,
   dailyMissionsCount = 6,
   currentUser,
@@ -52,6 +54,17 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Zone 2: Navigation Links (Desktop) */}
         <nav className="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-medium text-slate-300">
+          {onNavigateToCategories && (
+            <button
+              type="button"
+              onClick={onNavigateToCategories}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-lg transition-all cursor-pointer shadow-sm shadow-[#00e575]/25 whitespace-nowrap"
+              title="Voltar para a Página Principal de Categorias de Freelancer"
+            >
+              <span>📱 Categorias (Início)</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onOpenDailyMissions}
@@ -66,7 +79,7 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <a href="#vagas" className="hover:text-[#00e575] transition-colors whitespace-nowrap">
-            Vagas Diárias
+            Hub de Vagas
           </a>
           <button 
             type="button" 
@@ -188,6 +201,20 @@ export const Header: React.FC<HeaderProps> = ({
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-white/10 bg-[#0b0f12]/98 backdrop-blur-xl px-4 py-5 space-y-4 max-h-[calc(100dvh-4rem)] overflow-y-auto animate-in slide-in-from-top-3 duration-200">
           <nav className="flex flex-col space-y-1.5 text-sm font-medium text-slate-200">
+            {onNavigateToCategories && (
+              <button
+                type="button"
+                onClick={() => handleMobileNavClick(onNavigateToCategories)}
+                className="p-3.5 rounded-xl bg-[#00e575] text-slate-950 font-bold flex items-center justify-between text-left cursor-pointer active:bg-[#00c860]"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">📱</span>
+                  <span>Categorias de Freelancer (Início)</span>
+                </div>
+                <ArrowRight className="w-4 h-4 text-slate-950" />
+              </button>
+            )}
+
             {/* Daily Missions 24h Highlight in Mobile */}
             <button
               type="button"
@@ -211,7 +238,10 @@ export const Header: React.FC<HeaderProps> = ({
               onClick={() => handleMobileNavClick()}
               className="p-3 rounded-xl hover:bg-white/5 flex items-center justify-between active:bg-white/10"
             >
-              <span>Vagas Diárias</span>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-white">Hub de Vagas Freelancer</span>
+                <span className="text-[10px] font-bold text-[#00e575] bg-[#00e575]/10 px-1.5 py-0.5 rounded">Início</span>
+              </div>
               <ArrowRight className="w-4 h-4 text-slate-500" />
             </a>
 

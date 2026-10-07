@@ -5,7 +5,7 @@ export interface Task {
   title: string;
   company: string;
   locationType: 'workplace' | 'home';
-  category: 'Mecânica' | 'Elétrica' | 'Culinária' | 'Tecnologia' | 'Construção' | 'Artesanato' | 'Serviços';
+  category: 'Mecânica' | 'Elétrica' | 'Culinária' | 'Tecnologia' | 'Construção' | 'Artesanato' | 'Serviços' | 'Manutenção e projetos da casa' | 'Serviços automotivos' | string;
   basePay: number; // e.g., 50 (R$)
   payType: 'hora' | 'vídeo';
   videoBonus: number; // e.g., 25 (R$)

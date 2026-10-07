@@ -20,6 +20,7 @@ import { AuthModal } from './components/AuthModal';
 import { GeminiAssistantModal } from './components/GeminiAssistantModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { DailyMissionsModal } from './components/DailyMissionsModal';
+import { FreelancerCategoriesPage } from './components/FreelancerCategoriesPage';
 import { INITIAL_TASKS } from './data/initialTasks';
 import { DEFAULT_ASSISTANT_CONFIG, DEFAULT_PLATFORM_SETTINGS } from './data/defaultAdminConfig';
 import { Task, WorkLocationType, VideoSubmission, AdminAssistantConfig, PlatformSettings } from './types';
@@ -122,6 +123,7 @@ export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isDailyMissionsOpen, setIsDailyMissionsOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
+  const [activeView, setActiveView] = useState<'categories' | 'video'>('categories');
 
   // Admin Assistant and Platform Configuration
   const [assistantConfig, setAssistantConfig] = useState<AdminAssistantConfig>(() => {
@@ -272,59 +274,78 @@ export default function App() {
         </div>
       )}
 
-      {/* Navigation Header */}
-      <Header
-        onOpenCreateTask={() => setIsCreateTaskOpen(true)}
-        onOpenWallet={() => setIsWalletOpen(true)}
-        onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
-        onOpenAuth={handleOpenAuth}
-        onOpenGemini={() => setIsGeminiOpen(true)}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-        onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
-        dailyMissionsCount={dailyMissionsCount}
-        walletBalance={walletBalance}
-        currentUser={currentUser}
-      />
-
-      {/* Main Content Area */}
-      <main className="flex-1">
-        {/* Hero Section matching User's Screenshot */}
-        <Hero
-          locationFilter={locationFilter}
-          onChangeLocation={(loc) => setLocationFilter(loc)}
-          onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
-          onExploreTasks={handleScrollToTasks}
-          onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
-        />
-
-        {/* Daily Tasks Feed with Video Bonus highlights */}
-        <DailyTasksFeed
+      {/* Main View: Freelancer Categories Page (Default as requested by user) OR Video POV Page */}
+      {activeView === 'categories' ? (
+        <FreelancerCategoriesPage
           tasks={tasks}
-          selectedLocation={locationFilter}
-          onSelectLocation={(loc) => setLocationFilter(loc)}
           onSelectTask={(task) => setSelectedTask(task)}
           onOpenCreateTask={() => setIsCreateTaskOpen(true)}
           onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+          onOpenVideoPage={() => setActiveView('video')}
+          onOpenWallet={() => setIsWalletOpen(true)}
+          onOpenAuth={handleOpenAuth}
+          onOpenAdmin={() => setIsAdminOpen(true)}
+          currentUser={currentUser}
+          walletBalance={walletBalance}
         />
+      ) : (
+        <>
+          {/* Navigation Header for Video Page */}
+          <Header
+            onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+            onOpenWallet={() => setIsWalletOpen(true)}
+            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+            onOpenAuth={handleOpenAuth}
+            onOpenGemini={() => setIsGeminiOpen(true)}
+            onOpenAdmin={() => setIsAdminOpen(true)}
+            onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+            onNavigateToCategories={() => setActiveView('categories')}
+            dailyMissionsCount={dailyMissionsCount}
+            walletBalance={walletBalance}
+            currentUser={currentUser}
+          />
 
-        {/* Interactive Earnings Simulator */}
-        <EarningsCalculator onExploreTasks={handleScrollToTasks} />
+          {/* Main Content Area of Video Page */}
+          <main className="flex-1">
+            {/* Hub de Vagas Freelancer no Início do Projeto */}
+            <DailyTasksFeed
+              tasks={tasks}
+              selectedLocation={locationFilter}
+              onSelectLocation={(loc) => setLocationFilter(loc)}
+              onSelectTask={(task) => setSelectedTask(task)}
+              onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+              onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+            />
 
-        {/* Starter Kit & Recording Setup */}
-        <StarterKitSection />
+            {/* Hero Section & Apresentação da Plataforma */}
+            <Hero
+              locationFilter={locationFilter}
+              onChangeLocation={(loc) => setLocationFilter(loc)}
+              onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+              onExploreTasks={handleScrollToTasks}
+              onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+            />
 
-        {/* FAQ Section */}
-        <FAQSection />
-      </main>
+            {/* Interactive Earnings Simulator */}
+            <EarningsCalculator onExploreTasks={handleScrollToTasks} />
 
-      {/* Footer */}
-      <Footer
-        onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
-        onOpenCreateTask={() => setIsCreateTaskOpen(true)}
-      />
+            {/* Starter Kit & Recording Setup */}
+            <StarterKitSection />
 
-      {/* Floating WhatsApp Support matching user's screenshot button */}
-      <WhatsAppSupportModal />
+            {/* FAQ Section */}
+            <FAQSection />
+          </main>
+
+          {/* Footer */}
+          <Footer
+            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+            onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+          />
+
+          {/* Floating WhatsApp Support matching user's screenshot button */}
+          <WhatsAppSupportModal />
+        </>
+      )}
 
       {/* Interactive Modals */}
       <TaskDetailModal

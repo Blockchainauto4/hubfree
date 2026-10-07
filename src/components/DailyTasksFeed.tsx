@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Sparkles, Video, Clock, Users, Flame, ArrowUpRight, Check, Filter, Phone, PhoneCall } from 'lucide-react';
+import { Search, Sparkles, Video, Clock, Users, Flame, ArrowUpRight, Check, Filter, Phone, PhoneCall, Plus, Briefcase } from 'lucide-react';
 import { Task, WorkLocationType } from '../types';
 
 interface DailyTasksFeedProps {
@@ -69,39 +69,65 @@ export const DailyTasksFeed: React.FC<DailyTasksFeedProps> = ({
   }, [tasks]);
 
   return (
-    <section id="vagas" className="py-10 sm:py-14 max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
+    <section id="vagas" className="pt-6 sm:pt-10 pb-12 sm:pb-16 max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
+      {/* Ambient Top Glow for the Hub */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#00e575]/10 border border-[#00e575]/30 text-[#00e575] text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+          <Sparkles className="w-3.5 h-3.5 fill-current" />
+          Hub Central de Vagas Freelancer
+        </span>
+        <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] sm:text-xs font-medium">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00e575] animate-ping" />
+          Banco em Tempo Real
+        </span>
+        <span className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-300 text-[10px] sm:text-xs font-medium">
+          PIX em até 24h
+        </span>
+      </div>
+
       {/* Section Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-5 pb-5 sm:pb-6 border-b border-white/10">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-5 pb-5 sm:pb-6 border-b border-white/10">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-[#00e575] tracking-wider uppercase pb-1">
-            <Sparkles className="w-3.5 h-3.5 shrink-0" />
-            <span>Atualizado Hoje</span>
-          </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white font-display">
-            Postagens Freelancer Diárias
+            Hub de Vagas Freelancer & Missões 24h
           </h2>
-          {/* Zero-Pill Metadata formatting per design skill */}
+          {/* Metadata formatting */}
           <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-400 pt-1.5 sm:pt-2">
-            <span>{tasks.length} tarefas abertas</span>
+            <span className="text-white font-semibold">{tasks.length} postagens disponíveis</span>
             <span aria-hidden="true" className="text-slate-600">·</span>
             <span className="text-emerald-400 font-semibold font-mono">
               R$ {totalBonusPool},00 em bônus ativos
             </span>
             <span aria-hidden="true" className="text-slate-600">·</span>
-            <span>Pagamento via PIX em até 24h</span>
+            <span>R$ 50/h + Bônus em Vídeo</span>
+            <span aria-hidden="true" className="text-slate-600">·</span>
+            <span className="text-amber-400 font-medium">Contatos diretos de contratantes</span>
           </div>
         </div>
 
         {/* Actions & Filters */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto shrink-0">
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto shrink-0">
           {onOpenDailyMissions && (
             <button
               type="button"
               onClick={onOpenDailyMissions}
               className="px-3.5 py-2 text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-98"
+              title="Abrir painel exclusivo de missões com expiração em 24h e telefones dos contratantes"
             >
               <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
               <span>⚡ Missões 24h (Ver Contratantes)</span>
+            </button>
+          )}
+
+          {onOpenCreateTask && (
+            <button
+              type="button"
+              onClick={onOpenCreateTask}
+              className="px-3.5 py-2 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/20 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-98"
+              title="Publicar nova vaga de freelancer com bônus e contato"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[3]" />
+              <span>Publicar Vaga</span>
             </button>
           )}
 

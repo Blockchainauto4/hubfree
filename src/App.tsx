@@ -27,6 +27,8 @@ import {
   seedInitialTasksIfEmpty,
   subscribeToTasks,
   saveTaskToDb,
+  updateTaskInDb,
+  deleteTaskFromDb,
   saveSubmissionToDb,
   saveUserToDb,
 } from './services/dbService';
@@ -213,8 +215,20 @@ export default function App() {
 
   // Handle new task creation
   const handleTaskCreated = (newTask: Task) => {
-    setTasks((prev) => [newTask, ...prev]);
+    setTasks((prev) => [newTask, ...prev.filter((t) => t.id !== newTask.id)]);
     saveTaskToDb(newTask);
+  };
+
+  // Handle task update
+  const handleTaskUpdated = (updatedTask: Task) => {
+    setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+    updateTaskInDb(updatedTask);
+  };
+
+  // Handle task deletion
+  const handleTaskDeleted = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    deleteTaskFromDb(taskId);
   };
 
   // Handle user login/registration
@@ -376,6 +390,10 @@ export default function App() {
             prev.map((s) => (s.id === id ? { ...s, status: 'approved' as const } : s))
           );
         }}
+        tasks={tasks}
+        onTaskCreated={handleTaskCreated}
+        onTaskUpdated={handleTaskUpdated}
+        onTaskDeleted={handleTaskDeleted}
       />
     </div>
   );

@@ -106,11 +106,12 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             type="button"
             onClick={onOpenAdmin}
-            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:py-2 text-xs font-semibold text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors cursor-pointer"
-            title="Painel de Controle Administrativo & Configurações da IA"
+            className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:py-2 text-xs font-semibold text-purple-300 hover:text-white bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 rounded-lg transition-colors cursor-pointer"
+            title="Painel Administrativo da Equipe FreelaHub: Postagem e Gestão de Vagas em Tempo Real"
           >
             <Sliders className="w-3.5 h-3.5 text-purple-400" />
-            <span className="hidden xl:inline">Admin</span>
+            <span className="hidden xl:inline">Admin (Postar Vagas)</span>
+            <span className="xl:hidden">Admin</span>
           </button>
 
           {/* Gemini AI Trigger Button (All screens, responsive compact on small mobile) */}
@@ -279,10 +280,10 @@ export const Header: React.FC<HeaderProps> = ({
             <button
               type="button"
               onClick={() => handleMobileNavClick(onOpenAdmin)}
-              className="p-3 rounded-xl bg-slate-800/80 border border-white/10 flex items-center justify-center gap-2 text-slate-200 active:scale-98 transition-transform cursor-pointer"
+              className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center gap-2 text-purple-300 active:scale-98 transition-transform cursor-pointer font-semibold"
             >
               <Sliders className="w-4 h-4 text-purple-400" />
-              <span>Painel Admin</span>
+              <span>Admin (Postar Vagas)</span>
             </button>
 
             <button

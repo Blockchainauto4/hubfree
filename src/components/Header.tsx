@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Video, PlusCircle, Wallet, Sparkles, Sliders, Menu, X, ArrowRight, User } from 'lucide-react';
+import { Video, PlusCircle, Wallet, Sparkles, Sliders, Menu, X, ArrowRight, User, Flame } from 'lucide-react';
 
 interface HeaderProps {
   onOpenCreateTask: () => void;
@@ -8,7 +8,9 @@ interface HeaderProps {
   onOpenAuth: (mode: 'register' | 'login') => void;
   onOpenGemini: () => void;
   onOpenAdmin: () => void;
+  onOpenDailyMissions: () => void;
   walletBalance: number;
+  dailyMissionsCount?: number;
   currentUser?: { name: string; email: string; role: 'freelancer' | 'empresa' } | null;
 }
 
@@ -19,7 +21,9 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAuth,
   onOpenGemini,
   onOpenAdmin,
+  onOpenDailyMissions,
   walletBalance,
+  dailyMissionsCount = 6,
   currentUser,
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -47,7 +51,20 @@ export const Header: React.FC<HeaderProps> = ({
         </a>
 
         {/* Zone 2: Navigation Links (Desktop) */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-xs xl:text-sm font-medium text-slate-300">
+        <nav className="hidden lg:flex items-center gap-3 xl:gap-5 text-xs xl:text-sm font-medium text-slate-300">
+          <button
+            type="button"
+            onClick={onOpenDailyMissions}
+            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-bold text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 rounded-lg transition-all cursor-pointer shadow-sm shadow-amber-500/10 whitespace-nowrap"
+            title="Ver Missões Diárias de 24h com Contato Direto do Contratante"
+          >
+            <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span>⚡ Missões 24h</span>
+            <span className="text-[10px] bg-amber-500 text-slate-950 font-extrabold px-1.5 py-0.2 rounded-full ml-0.5">
+              {dailyMissionsCount}
+            </span>
+          </button>
+
           <a href="#vagas" className="hover:text-[#00e575] transition-colors whitespace-nowrap">
             Vagas Diárias
           </a>
@@ -170,6 +187,24 @@ export const Header: React.FC<HeaderProps> = ({
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-white/10 bg-[#0b0f12]/98 backdrop-blur-xl px-4 py-5 space-y-4 max-h-[calc(100dvh-4rem)] overflow-y-auto animate-in slide-in-from-top-3 duration-200">
           <nav className="flex flex-col space-y-1.5 text-sm font-medium text-slate-200">
+            {/* Daily Missions 24h Highlight in Mobile */}
+            <button
+              type="button"
+              onClick={() => handleMobileNavClick(onOpenDailyMissions)}
+              className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 to-amber-500/5 border border-amber-500/30 flex items-center justify-between text-left cursor-pointer active:bg-amber-500/25"
+            >
+              <div className="flex items-center gap-2.5">
+                <Flame className="w-5 h-5 text-amber-400 animate-pulse shrink-0" />
+                <div>
+                  <span className="font-bold text-amber-300 block">⚡ Missões Diárias (24h)</span>
+                  <span className="text-[11px] text-slate-400">Ver contatos dos contratantes</span>
+                </div>
+              </div>
+              <span className="text-xs bg-amber-500 text-slate-950 font-extrabold px-2 py-0.5 rounded-full shrink-0">
+                {dailyMissionsCount}
+              </span>
+            </button>
+
             <a
               href="#vagas"
               onClick={() => handleMobileNavClick()}

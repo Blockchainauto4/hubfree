@@ -20,6 +20,14 @@ export interface Task {
   equipmentNeeded: string[];
   postedDate: string;
   isUrgent?: boolean;
+  isDailyMission?: boolean; // Missão diária de resgate rápido (expira no prazo de 24h)
+  expiresAt?: string; // Data/hora limite de expiração ISO string
+  expiresInHours?: number; // Horas restantes para expirar (ex: 4h, 8h, 14h, 24h)
+  contractorPhone?: string; // Telefone do contratante
+  contractorWhatsapp?: string; // WhatsApp direto do contratante para contato rápido
+  contractorContactName?: string; // Nome do responsável/coordenador da vaga
+  contractorRole?: string; // Cargo/departamento do contratante
+  missionUrgency?: 'critica' | 'alta' | 'moderada'; // Nível de urgência da missão de 24h
 }
 
 export interface VideoSubmission {

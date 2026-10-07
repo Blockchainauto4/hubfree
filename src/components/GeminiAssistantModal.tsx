@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Sparkles, X, Send, Bot, User, RotateCcw, Zap, HelpCircle, Sliders } from 'lucide-react';
 import { AdminAssistantConfig } from '../types';
+import { saveChatMessageToDb, fetchChatMessagesFromDb } from '../services/dbService';
 
 interface GeminiAssistantModalProps {
   isOpen: boolean;
@@ -34,6 +35,25 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
+  // Restore conversation history from database/storage on mount
+  useEffect(() => {
+    let mounted = true;
+    fetchChatMessagesFromDb('gemini_chat').then((history) => {
+      if (mounted && history && history.length > 0) {
+        setMessages(
+          history.map((h) => ({
+            sender: (h.sender === 'user' ? 'user' : 'model') as 'user' | 'model',
+            text: h.text,
+            time: h.time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+          }))
+        );
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -59,6 +79,7 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
     const userMsg: Message = { sender: 'user', text: prompt, time: now };
 
     setMessages((prev) => [...prev, userMsg]);
+    saveChatMessageToDb('gemini_chat', userMsg);
     setInput('');
     setIsLoading(true);
 
@@ -78,14 +99,13 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
       if (response.ok) {
         const data = await response.json();
         const replyText = data.reply || data.fallbackReply;
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: 'model',
-            text: replyText,
-            time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-          },
-        ]);
+        const modelMsg: Message = {
+          sender: 'model',
+          text: replyText,
+          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, modelMsg]);
+        saveChatMessageToDb('gemini_chat', modelMsg);
       } else {
         throw new Error('Falha na resposta do assistente');
       }
@@ -99,20 +119,22 @@ export const GeminiAssistantModal: React.FC<GeminiAssistantModalProps> = ({
         fallback = 'O mais recomendado é o suporte elástico de cabeça (head-mount) com ângulo ajustável para baixo (olhando para as mãos). Para oficinas pesadas ou uso com capacete, o suporte peitoral (chest-mount) também é muito estável.';
       }
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: 'model',
-          text: fallback,
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
+      const fallbackMsg: Message = {
+        sender: 'model',
+        text: fallback,
+        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, fallbackMsg]);
+      saveChatMessageToDb('gemini_chat', fallbackMsg);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleClear = () => {
+    try {
+      localStorage.removeItem('freelahub_messages_gemini_chat');
+    } catch {}
     setMessages([
       {
         sender: 'model',

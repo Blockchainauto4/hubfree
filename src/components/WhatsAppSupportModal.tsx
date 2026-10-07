@@ -71,15 +71,15 @@ export const WhatsAppSupportModal: React.FC = () => {
 
       {/* Interactive Chat Popup */}
       {isOpen && (
-        <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm rounded-2xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-18 right-3 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-2xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[75dvh] sm:max-h-none animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="bg-[#128C7E] px-4 py-3 flex items-center justify-between text-white">
+          <div className="bg-[#128C7E] px-4 py-3 flex items-center justify-between text-white shrink-0">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
                 FH
               </div>
               <div>
-                <div className="text-xs font-bold leading-tight">Suporte FreelasHub</div>
+                <div className="text-xs font-bold leading-tight">Suporte FreelaHub</div>
                 <div className="text-[10px] text-emerald-100 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00ff87] animate-pulse" />
                   Online agora · Resposta rápida
@@ -89,14 +89,14 @@ export const WhatsAppSupportModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded hover:bg-white/10 text-white cursor-pointer"
+              className="p-1.5 rounded hover:bg-white/10 text-white cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Messages Feed */}
-          <div className="p-4 h-72 overflow-y-auto space-y-3 bg-[#0b1014] text-xs">
+          <div className="p-3.5 sm:p-4 h-64 sm:h-72 overflow-y-auto space-y-3 bg-[#0b1014] text-xs flex-1">
             {chatLog.map((chat, idx) => (
               <div
                 key={idx}
@@ -121,42 +121,42 @@ export const WhatsAppSupportModal: React.FC = () => {
           </div>
 
           {/* Quick Preset Buttons */}
-          <div className="p-2 bg-slate-950/80 border-t border-white/5 flex gap-1.5 overflow-x-auto text-[10px]">
+          <div className="p-2 bg-slate-950/80 border-t border-white/5 flex gap-1.5 overflow-x-auto text-[10px] no-scrollbar shrink-0">
             <button
               type="button"
               onClick={() => setMessage('Como funciona o bônus em vídeo?')}
-              className="whitespace-nowrap px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
+              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
             >
               Bônus em Vídeo?
             </button>
             <button
               type="button"
               onClick={() => setMessage('Quando cai o PIX?')}
-              className="whitespace-nowrap px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
+              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
             >
               Prazo do PIX?
             </button>
             <button
               type="button"
               onClick={() => setMessage('Qual suporte de celular usar?')}
-              className="whitespace-nowrap px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5"
+              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
             >
               Suporte de Celular?
             </button>
           </div>
 
           {/* Input Form */}
-          <form onSubmit={handleSendMessage} className="p-3 bg-slate-950 border-t border-white/10 flex gap-2">
+          <form onSubmit={handleSendMessage} className="p-2.5 sm:p-3 bg-slate-950 border-t border-white/10 flex gap-2 shrink-0">
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Digite sua dúvida..."
-              className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+              className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
             />
             <button
               type="submit"
-              className="p-2 rounded-xl bg-[#00e575] hover:bg-[#00ff87] text-slate-950 transition-colors cursor-pointer"
+              className="p-2.5 rounded-xl bg-[#00e575] hover:bg-[#00ff87] text-slate-950 transition-colors cursor-pointer shrink-0 active:scale-95"
             >
               <Send className="w-4 h-4" />
             </button>

@@ -14,7 +14,13 @@ import {
   ShieldCheck,
   FileVideo,
   Clock,
-  Layers
+  Layers,
+  Phone,
+  PhoneCall,
+  Copy,
+  Check,
+  ExternalLink,
+  User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Task, VideoSubmission } from '../types';
@@ -42,6 +48,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
+  const [isPhoneCopied, setIsPhoneCopied] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -308,6 +315,88 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   ))}
                 </div>
               </div>
+
+              {/* Contractor Contact Card (24h Daily Mission) */}
+              {task.contractorPhone && (
+                <div className="p-4 rounded-xl bg-slate-950 border border-[#00e575]/30 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-[#00e575]/15 border border-[#00e575]/30 flex items-center justify-center text-[#00e575]">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-[#00e575] tracking-wider block">
+                          Contratante Oficial da Vaga (Prazo 24h)
+                        </span>
+                        <h5 className="text-xs sm:text-sm font-bold text-white">
+                          {task.contractorContactName || task.company}
+                        </h5>
+                      </div>
+                    </div>
+                    {task.expiresInHours && (
+                      <span className="text-[11px] font-mono font-bold text-amber-300 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded">
+                        Expira em ~{task.expiresInHours}h
+                      </span>
+                    )}
+                  </div>
+
+                  {task.contractorRole && (
+                    <p className="text-xs text-slate-400">
+                      {task.contractorRole} • {task.company}
+                    </p>
+                  )}
+
+                  {/* Phone & Instant Actions */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                    <div className="sm:col-span-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-3.5 h-3.5 text-[#00e575]" />
+                        <span className="font-mono text-xs font-bold text-white truncate">
+                          {task.contractorPhone}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (task.contractorPhone) {
+                            navigator.clipboard.writeText(task.contractorPhone);
+                            setIsPhoneCopied(true);
+                            setTimeout(() => setIsPhoneCopied(false), 2000);
+                          }
+                        }}
+                        className="text-slate-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
+                        title="Copiar Telefone"
+                      >
+                        {isPhoneCopied ? (
+                          <Check className="w-3.5 h-3.5 text-[#00e575]" />
+                        ) : (
+                          <Copy className="w-3.5 h-3.5" />
+                        )}
+                      </button>
+                    </div>
+
+                    <a
+                      href={`https://wa.me/${(task.contractorWhatsapp || task.contractorPhone).replace(/\D/g, '')}?text=${encodeURIComponent(
+                        `Olá! Vi sua vaga no FreelaHub ("${task.title}"). Gostaria de tirar dúvidas e confirmar minha gravação com você!`
+                      )}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="py-2 px-3 rounded-xl text-xs font-bold bg-[#00e575] hover:bg-[#00ff87] text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-sm shadow-[#00e575]/20"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>WhatsApp Direto</span>
+                    </a>
+
+                    <a
+                      href={`tel:${task.contractorPhone.replace(/\s+/g, '')}`}
+                      className="py-2 px-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white flex items-center justify-center gap-1.5 transition-colors border border-white/10"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5 text-[#00e575]" />
+                      <span>Ligar Agora</span>
+                    </a>
+                  </div>
+                </div>
+              )}
 
               {/* CTA forward */}
               <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">

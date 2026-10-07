@@ -36,6 +36,12 @@ CREATE TABLE IF NOT EXISTS tasks (
     equipment_needed JSONB DEFAULT '[]'::jsonb,
     posted_date VARCHAR(64) NOT NULL,
     is_urgent BOOLEAN DEFAULT FALSE,
+    is_daily_mission BOOLEAN DEFAULT FALSE,
+    expires_at TIMESTAMP WITH TIME ZONE DEFAULT (CURRENT_TIMESTAMP + INTERVAL '24 hours'),
+    expires_in_hours INT DEFAULT 24,
+    contractor_phone VARCHAR(64),
+    contractor_whatsapp VARCHAR(64),
+    contractor_contact_name VARCHAR(255),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -77,8 +83,20 @@ CREATE TABLE IF NOT EXISTS platform_config (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Índices de Performance para o Feed
+-- 6. Tabela de Conversas e Histórico de Chat com o Assistente Gemini / Suporte
+CREATE TABLE IF NOT EXISTS chat_messages (
+    id VARCHAR(64) PRIMARY KEY,
+    conversation_id VARCHAR(64) NOT NULL,
+    user_id VARCHAR(64),
+    sender VARCHAR(16) NOT NULL CHECK (sender IN ('user', 'model', 'bot')),
+    text TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices de Performance para o Feed e Conversas
 CREATE INDEX IF NOT EXISTS idx_tasks_location ON tasks(location_type);
 CREATE INDEX IF NOT EXISTS idx_tasks_category ON tasks(category);
 CREATE INDEX IF NOT EXISTS idx_tasks_bonus ON tasks(has_active_bonus);
+CREATE INDEX IF NOT EXISTS idx_tasks_daily_missions ON tasks(is_daily_mission, expires_at);
 CREATE INDEX IF NOT EXISTS idx_submissions_task ON submissions(task_id);
+CREATE INDEX IF NOT EXISTS idx_chat_messages_conv ON chat_messages(conversation_id, created_at);

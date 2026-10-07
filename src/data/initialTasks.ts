@@ -1,5 +1,11 @@
 import { Task } from '../types';
 
+const getFutureISO = (hoursFromNow: number): string => {
+  const d = new Date();
+  d.setHours(d.getHours() + hoursFromNow);
+  return d.toISOString();
+};
+
 export const INITIAL_TASKS: Task[] = [
   {
     id: 'task-1',
@@ -25,7 +31,15 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Suporte de celular para cabeça ou peito', 'Smartphone com câmera 1080p ou 4K', 'EPIs padrão (óculos e luvas isolantes)'],
     postedDate: 'Hoje às 07:30',
-    isUrgent: true
+    isUrgent: true,
+    isDailyMission: true,
+    expiresInHours: 5,
+    expiresAt: getFutureISO(5),
+    contractorContactName: 'Eng. Roberto Farias',
+    contractorRole: 'Coordenador Técnico de Projetos Industriais',
+    contractorPhone: '+55 (11) 98765-4321',
+    contractorWhatsapp: '5511987654321',
+    missionUrgency: 'critica'
   },
   {
     id: 'task-2',
@@ -51,7 +65,15 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Suporte elástico de cabeça com ângulo regulável', 'Pano de microfibra para lente', 'Lanterna auxiliar se oficina for escura'],
     postedDate: 'Hoje às 08:15',
-    isUrgent: false
+    isUrgent: false,
+    isDailyMission: true,
+    expiresInHours: 8,
+    expiresAt: getFutureISO(8),
+    contractorContactName: 'Marcos Vinicius de Souza',
+    contractorRole: 'Gerente Operacional da Oficina AutoData',
+    contractorPhone: '+55 (11) 97123-8899',
+    contractorWhatsapp: '5511971238899',
+    missionUrgency: 'alta'
   },
   {
     id: 'task-3',
@@ -77,7 +99,15 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Suporte de pescoço ou tripé de mesa elevado', 'Câmera ou celular em modo 60fps'],
     postedDate: 'Hoje às 09:00',
-    isUrgent: false
+    isUrgent: false,
+    isDailyMission: true,
+    expiresInHours: 16,
+    expiresAt: getFutureISO(16),
+    contractorContactName: 'Juliana Prado',
+    contractorRole: 'Líder de Coleta de Dados de Desenvolvedores',
+    contractorPhone: '+55 (31) 98455-6677',
+    contractorWhatsapp: '5531984556677',
+    missionUrgency: 'moderada'
   },
   {
     id: 'task-4',
@@ -103,7 +133,15 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Suporte de celular para cabeça ou suporte magnético de bancada', 'Luz clara na bancada'],
     postedDate: 'Hoje às 09:40',
-    isUrgent: true
+    isUrgent: true,
+    isDailyMission: true,
+    expiresInHours: 7,
+    expiresAt: getFutureISO(7),
+    contractorContactName: 'Chef Amanda Lins',
+    contractorRole: 'Diretora Culinária & Curadoria GourmetAI',
+    contractorPhone: '+55 (21) 99882-1234',
+    contractorWhatsapp: '5521998821234',
+    missionUrgency: 'alta'
   },
   {
     id: 'task-5',
@@ -129,7 +167,15 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Filtro óptico DIN 9-11 para lente', 'Suporte firme preso à máscara de solda ou cabeça'],
     postedDate: 'Hoje às 10:00',
-    isUrgent: true
+    isUrgent: true,
+    isDailyMission: true,
+    expiresInHours: 3,
+    expiresAt: getFutureISO(3),
+    contractorContactName: 'Sérgio Ramos Caldeiraria',
+    contractorRole: 'Inspetor N2 de Soldagem Industrial',
+    contractorPhone: '+55 (19) 99654-7711',
+    contractorWhatsapp: '5519996547711',
+    missionUrgency: 'critica'
   },
   {
     id: 'task-6',
@@ -155,6 +201,14 @@ export const INITIAL_TASKS: Task[] = [
     ],
     equipmentNeeded: ['Luminária articulada', 'Suporte de celular para peito ou tripé vertical'],
     postedDate: 'Hoje às 10:20',
-    isUrgent: false
+    isUrgent: false,
+    isDailyMission: true,
+    expiresInHours: 12,
+    expiresAt: getFutureISO(12),
+    contractorContactName: 'Dr. Lucas Silveira',
+    contractorRole: 'Engenheiro Chefe de Hardware CircuitLabs',
+    contractorPhone: '+55 (41) 99123-4567',
+    contractorWhatsapp: '5541991234567',
+    missionUrgency: 'moderada'
   }
 ];

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Sparkles, Check, Building2, Clock, DollarSign } from 'lucide-react';
+import { X, Plus, Sparkles, Check, Building2, Clock, DollarSign, Phone, User, Flame } from 'lucide-react';
 import { Task } from '../types';
 
 interface CreateTaskModalProps {
@@ -30,12 +30,24 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
   const [req2, setReq2] = useState('Boa iluminação no local sem reflexos excessivos');
   const [req3, setReq3] = useState('Áudio ambiente real sem ruídos de música externa');
 
+  // Daily Mission & Contractor contact fields
+  const [isDailyMission, setIsDailyMission] = useState(true);
+  const [expiresInHours, setExpiresInHours] = useState<number>(24);
+  const [contractorContactName, setContractorContactName] = useState('');
+  const [contractorPhone, setContractorPhone] = useState('');
+  const [contractorRole, setContractorRole] = useState('Supervisor de Operações');
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !company.trim() || !description.trim()) {
       alert('Por favor, preencha os campos obrigatórios.');
       return;
     }
+
+    const expDate = new Date();
+    expDate.setHours(expDate.getHours() + Number(expiresInHours));
+
+    const cleanPhone = contractorPhone.trim() || '+55 (11) 98765-4321';
 
     const newTask: Task = {
       id: 'task-' + Date.now(),
@@ -59,6 +71,14 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
       equipmentNeeded: ['Suporte de celular para cabeça ou peitoral', 'Smartphone com câmera 1080p'],
       postedDate: 'Hoje agora mesmo',
       isUrgent: true,
+      isDailyMission,
+      expiresInHours: Number(expiresInHours),
+      expiresAt: expDate.toISOString(),
+      contractorPhone: cleanPhone,
+      contractorWhatsapp: cleanPhone.replace(/\D/g, ''),
+      contractorContactName: contractorContactName.trim() || company.trim(),
+      contractorRole: contractorRole.trim() || 'Coordenador da Vaga',
+      missionUrgency: Number(expiresInHours) <= 6 ? 'critica' : Number(expiresInHours) <= 12 ? 'alta' : 'moderada',
     };
 
     onTaskCreated(newTask);
@@ -257,6 +277,97 @@ export const CreateTaskModal: React.FC<CreateTaskModalProps> = ({
                     placeholder="Ex: Gravação 1080p60fps entregue em até 12h"
                     className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
                   />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 24-Hour Daily Mission & Contractor Phone Configuration */}
+          <div className="p-4 rounded-xl bg-slate-950 border border-amber-500/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-bold text-white">
+                <input
+                  type="checkbox"
+                  checked={isDailyMission}
+                  onChange={(e) => setIsDailyMission(e.target.checked)}
+                  className="w-4 h-4 rounded text-amber-500 accent-amber-500 focus:ring-0 cursor-pointer"
+                />
+                <span className="flex items-center gap-1.5 text-amber-300">
+                  <Flame className="w-3.5 h-3.5 text-amber-400" />
+                  Ativar como Missão Diária de 24 Horas
+                </span>
+              </label>
+              {isDailyMission && (
+                <span className="text-[11px] font-mono font-bold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                  Prazo: {expiresInHours}h
+                </span>
+              )}
+            </div>
+
+            {isDailyMission && (
+              <div className="space-y-3 pt-2 border-t border-white/5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-300 flex items-center gap-1 mb-1">
+                      <Clock className="w-3 h-3 text-amber-400" />
+                      Prazo Limite de Expiração
+                    </label>
+                    <select
+                      value={expiresInHours}
+                      onChange={(e) => setExpiresInHours(Number(e.target.value))}
+                      className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                    >
+                      <option value={6}>6 Horas (Urgência Crítica)</option>
+                      <option value={12}>12 Horas (Urgência Alta)</option>
+                      <option value={24}>24 Horas (Padrão Diário)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-300 flex items-center gap-1 mb-1">
+                      <User className="w-3 h-3 text-[#00e575]" />
+                      Nome do Contratante / Coordenador
+                    </label>
+                    <input
+                      type="text"
+                      value={contractorContactName}
+                      onChange={(e) => setContractorContactName(e.target.value)}
+                      placeholder="Ex: Carlos Eduardo (Supervisor)"
+                      className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-300 flex items-center gap-1 mb-1">
+                      <Phone className="w-3 h-3 text-[#00e575]" />
+                      Número de Telefone / WhatsApp do Contratante *
+                    </label>
+                    <input
+                      type="text"
+                      value={contractorPhone}
+                      onChange={(e) => setContractorPhone(e.target.value)}
+                      placeholder="Ex: +55 (11) 98765-4321"
+                      className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-[#00e575]"
+                    />
+                    <span className="text-[10px] text-slate-400 block mt-1">
+                      Este número ficará visível na tela de missões diárias para contato direto.
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-300 block mb-1">
+                      Cargo / Departamento do Contratante
+                    </label>
+                    <input
+                      type="text"
+                      value={contractorRole}
+                      onChange={(e) => setContractorRole(e.target.value)}
+                      placeholder="Ex: Supervisor Técnico de Projetos"
+                      className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                    />
+                  </div>
                 </div>
               </div>
             )}

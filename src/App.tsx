@@ -19,6 +19,7 @@ import { WhatsAppSupportModal } from './components/WhatsAppSupportModal';
 import { AuthModal } from './components/AuthModal';
 import { GeminiAssistantModal } from './components/GeminiAssistantModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
+import { DailyMissionsModal } from './components/DailyMissionsModal';
 import { INITIAL_TASKS } from './data/initialTasks';
 import { DEFAULT_ASSISTANT_CONFIG, DEFAULT_PLATFORM_SETTINGS } from './data/defaultAdminConfig';
 import { Task, WorkLocationType, VideoSubmission, AdminAssistantConfig, PlatformSettings } from './types';
@@ -117,6 +118,7 @@ export default function App() {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isDailyMissionsOpen, setIsDailyMissionsOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
 
   // Admin Assistant and Platform Configuration
@@ -236,6 +238,10 @@ export default function App() {
     }
   };
 
+  const dailyMissionsCount = tasks.filter(
+    (t) => t.isDailyMission || (typeof t.expiresInHours === 'number' && t.expiresInHours <= 24)
+  ).length;
+
   return (
     <div className="min-h-screen bg-[#0b0f12] text-slate-100 flex flex-col selection:bg-[#00e575]/30 selection:text-white">
       {/* Top Announcement Banner if activated by Admin */}
@@ -260,6 +266,8 @@ export default function App() {
         onOpenAuth={handleOpenAuth}
         onOpenGemini={() => setIsGeminiOpen(true)}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+        dailyMissionsCount={dailyMissionsCount}
         walletBalance={walletBalance}
         currentUser={currentUser}
       />
@@ -272,6 +280,7 @@ export default function App() {
           onChangeLocation={(loc) => setLocationFilter(loc)}
           onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
           onExploreTasks={handleScrollToTasks}
+          onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
         />
 
         {/* Daily Tasks Feed with Video Bonus highlights */}
@@ -281,6 +290,7 @@ export default function App() {
           onSelectLocation={(loc) => setLocationFilter(loc)}
           onSelectTask={(task) => setSelectedTask(task)}
           onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+          onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
         />
 
         {/* Interactive Earnings Simulator */}
@@ -342,6 +352,15 @@ export default function App() {
         onClose={() => setIsGeminiOpen(false)}
         config={assistantConfig}
         onOpenAdmin={() => setIsAdminOpen(true)}
+      />
+
+      <DailyMissionsModal
+        isOpen={isDailyMissionsOpen}
+        onClose={() => setIsDailyMissionsOpen(false)}
+        tasks={tasks}
+        onSelectTask={(task) => {
+          setSelectedTask(task);
+        }}
       />
 
       <AdminPanelModal

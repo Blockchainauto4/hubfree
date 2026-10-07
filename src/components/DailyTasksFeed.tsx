@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Sparkles, Video, Clock, Users, Flame, ArrowUpRight, Check, Filter } from 'lucide-react';
+import { Search, Sparkles, Video, Clock, Users, Flame, ArrowUpRight, Check, Filter, Phone, PhoneCall } from 'lucide-react';
 import { Task, WorkLocationType } from '../types';
 
 interface DailyTasksFeedProps {
@@ -8,6 +8,7 @@ interface DailyTasksFeedProps {
   onSelectLocation: (type: WorkLocationType) => void;
   onSelectTask: (task: Task) => void;
   onOpenCreateTask: () => void;
+  onOpenDailyMissions?: () => void;
 }
 
 export const DailyTasksFeed: React.FC<DailyTasksFeedProps> = ({
@@ -16,6 +17,7 @@ export const DailyTasksFeed: React.FC<DailyTasksFeedProps> = ({
   onSelectLocation,
   onSelectTask,
   onOpenCreateTask,
+  onOpenDailyMissions,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -90,43 +92,57 @@ export const DailyTasksFeed: React.FC<DailyTasksFeedProps> = ({
           </div>
         </div>
 
-        {/* Location Filter Segments (Mobile Optimized full-width) */}
-        <div className="grid grid-cols-3 sm:flex items-center gap-1 p-1 bg-slate-900 border border-white/10 rounded-xl w-full sm:w-auto shrink-0">
-          <button
-            type="button"
-            onClick={() => onSelectLocation('all')}
-            className={`px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
-              selectedLocation === 'all'
-                ? 'bg-white/15 text-white'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            Todas
-          </button>
-          <button
-            type="button"
-            onClick={() => onSelectLocation('workplace')}
-            className={`flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
-              selectedLocation === 'workplace'
-                ? 'bg-[#00e575] text-slate-950 font-bold'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span>👷</span>
-            <span>Trabalho</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => onSelectLocation('home')}
-            className={`flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
-              selectedLocation === 'home'
-                ? 'bg-[#00e575] text-slate-950 font-bold'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <span>🛋️</span>
-            <span>Em Casa</span>
-          </button>
+        {/* Actions & Filters */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto shrink-0">
+          {onOpenDailyMissions && (
+            <button
+              type="button"
+              onClick={onOpenDailyMissions}
+              className="px-3.5 py-2 text-xs font-bold text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap active:scale-98"
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+              <span>⚡ Missões 24h (Ver Contratantes)</span>
+            </button>
+          )}
+
+          {/* Location Filter Segments (Mobile Optimized full-width) */}
+          <div className="grid grid-cols-3 sm:flex items-center gap-1 p-1 bg-slate-900 border border-white/10 rounded-xl w-full sm:w-auto shrink-0">
+            <button
+              type="button"
+              onClick={() => onSelectLocation('all')}
+              className={`px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                selectedLocation === 'all'
+                  ? 'bg-white/15 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              Todas
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectLocation('workplace')}
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                selectedLocation === 'workplace'
+                  ? 'bg-[#00e575] text-slate-950 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>👷</span>
+              <span>Trabalho</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onSelectLocation('home')}
+              className={`flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-2 sm:py-1.5 text-center text-xs font-semibold rounded-lg transition-all cursor-pointer whitespace-nowrap ${
+                selectedLocation === 'home'
+                  ? 'bg-[#00e575] text-slate-950 font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>🛋️</span>
+              <span>Em Casa</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -311,6 +327,35 @@ export const DailyTasksFeed: React.FC<DailyTasksFeedProps> = ({
                       </div>
                     </div>
                   </div>
+
+                  {/* Contractor Direct Contact Box (if available) */}
+                  {task.contractorPhone && (
+                    <div className="p-2.5 rounded-xl bg-slate-900 border border-white/10 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Phone className="w-3.5 h-3.5 text-[#00e575] shrink-0" />
+                        <div className="min-w-0">
+                          <span className="text-[10px] text-slate-400 block truncate">
+                            Contratante: {task.contractorContactName || task.company}
+                          </span>
+                          <span className="font-mono text-xs font-bold text-white tracking-wide">
+                            {task.contractorPhone}
+                          </span>
+                        </div>
+                      </div>
+                      {onOpenDailyMissions && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onOpenDailyMissions();
+                          }}
+                          className="text-[10px] font-bold text-[#00e575] hover:underline bg-[#00e575]/10 hover:bg-[#00e575]/20 px-2 py-1 rounded shrink-0 cursor-pointer transition-colors"
+                        >
+                          Ver Contato
+                        </button>
+                      )}
+                    </div>
+                  )}
 
                   {/* Primary Card Button */}
                   <button

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Sparkles, CheckCircle2, Video, Zap, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Play, Sparkles, CheckCircle2, Video, Zap, ArrowRight, ShieldCheck, Flame } from 'lucide-react';
 import { WorkLocationType } from '../types';
 
 interface HeroProps {
@@ -7,6 +7,7 @@ interface HeroProps {
   onChangeLocation: (type: WorkLocationType) => void;
   onOpenHowItWorks: () => void;
   onExploreTasks: () => void;
+  onOpenDailyMissions?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -14,6 +15,7 @@ export const Hero: React.FC<HeroProps> = ({
   onChangeLocation,
   onOpenHowItWorks,
   onExploreTasks,
+  onOpenDailyMissions,
 }) => {
   return (
     <section className="relative overflow-hidden pt-6 pb-12 sm:pt-10 sm:pb-16 md:pt-14 md:pb-24 border-b border-white/5 bg-grid-pattern">
@@ -83,6 +85,18 @@ export const Hero: React.FC<HeroProps> = ({
                 <span>Bônus Diário: até +R$ 35,00</span>
               </div>
             </div>
+
+            {/* Daily Missions 24h Fast Link */}
+            {onOpenDailyMissions && (
+              <button
+                type="button"
+                onClick={onOpenDailyMissions}
+                className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-bold transition-all shadow-sm cursor-pointer w-fit group"
+              >
+                <Flame className="w-4 h-4 text-amber-400 animate-pulse group-hover:scale-110 transition-transform" />
+                <span>⚡ Ver Missões que expiram em 24h & Telefones dos Contratantes</span>
+              </button>
+            )}
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 pt-1">

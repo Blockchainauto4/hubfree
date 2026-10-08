@@ -38,7 +38,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Coordenador de Manutenção Residencial',
     contractorPhone: '+55 (11) 98765-4321',
     contractorWhatsapp: '5511987654321',
-    missionUrgency: 'critica'
+    missionUrgency: 'critica',
+    status: 'ativa',
+    city: 'São Paulo',
+    state: 'SP',
+    neighborhood: 'Moema',
+    country: 'Brasil',
+    postalCode: '04515-010',
+    latitude: -23.6021,
+    longitude: -46.6625,
+    scheduleTime: 'Horário flexível (até 24h)',
+    completenessScore: 100
   },
   {
     id: 'task-auto-1',
@@ -71,7 +81,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Chefe de Oficina Mecânica',
     contractorPhone: '+55 (11) 97123-8899',
     contractorWhatsapp: '5511971238899',
-    missionUrgency: 'alta'
+    missionUrgency: 'alta',
+    status: 'ativa',
+    city: 'São Paulo',
+    state: 'SP',
+    neighborhood: 'Pinheiros',
+    country: 'Brasil',
+    postalCode: '05419-000',
+    latitude: -23.5615,
+    longitude: -46.6905,
+    scheduleTime: '08:00 às 17:00',
+    completenessScore: 100
   },
   {
     id: 'task-1',
@@ -105,7 +125,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Coordenador Técnico de Projetos Industriais',
     contractorPhone: '+55 (11) 98765-4321',
     contractorWhatsapp: '5511987654321',
-    missionUrgency: 'critica'
+    missionUrgency: 'critica',
+    status: 'ativa',
+    city: 'São Paulo',
+    state: 'SP',
+    neighborhood: 'Tatuapé',
+    country: 'Brasil',
+    postalCode: '03077-000',
+    latitude: -23.5401,
+    longitude: -46.5765,
+    scheduleTime: '08:00 às 17:00',
+    completenessScore: 100
   },
   {
     id: 'task-2',
@@ -139,7 +169,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Gerente Operacional da Oficina AutoData',
     contractorPhone: '+55 (11) 97123-8899',
     contractorWhatsapp: '5511971238899',
-    missionUrgency: 'alta'
+    missionUrgency: 'alta',
+    status: 'ativa',
+    city: 'Campinas',
+    state: 'SP',
+    neighborhood: 'Cambuí',
+    country: 'Brasil',
+    postalCode: '13025-000',
+    latitude: -22.8988,
+    longitude: -47.0514,
+    scheduleTime: '09:00 às 18:00',
+    completenessScore: 100
   },
   {
     id: 'task-3',
@@ -173,7 +213,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Líder de Coleta de Dados de Desenvolvedores',
     contractorPhone: '+55 (31) 98455-6677',
     contractorWhatsapp: '5531984556677',
-    missionUrgency: 'moderada'
+    missionUrgency: 'moderada',
+    status: 'ativa',
+    city: 'Belo Horizonte',
+    state: 'MG',
+    neighborhood: 'Savassi',
+    country: 'Brasil',
+    postalCode: '30140-000',
+    latitude: -19.9388,
+    longitude: -43.9341,
+    scheduleTime: 'Horário flexível',
+    completenessScore: 100
   },
   {
     id: 'task-4',
@@ -207,7 +257,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Diretora Culinária & Curadoria GourmetAI',
     contractorPhone: '+55 (21) 99882-1234',
     contractorWhatsapp: '5521998821234',
-    missionUrgency: 'alta'
+    missionUrgency: 'alta',
+    status: 'ativa',
+    city: 'Rio de Janeiro',
+    state: 'RJ',
+    neighborhood: 'Botafogo',
+    country: 'Brasil',
+    postalCode: '22270-000',
+    latitude: -22.9519,
+    longitude: -43.1843,
+    scheduleTime: 'Manhã ou tarde',
+    completenessScore: 100
   },
   {
     id: 'task-5',
@@ -241,7 +301,17 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Inspetor N2 de Soldagem Industrial',
     contractorPhone: '+55 (19) 99654-7711',
     contractorWhatsapp: '5519996547711',
-    missionUrgency: 'critica'
+    missionUrgency: 'critica',
+    status: 'ativa',
+    city: 'Santos',
+    state: 'SP',
+    neighborhood: 'Porto',
+    country: 'Brasil',
+    postalCode: '11013-000',
+    latitude: -23.9688,
+    longitude: -46.3338,
+    scheduleTime: '07:30 às 16:30',
+    completenessScore: 100
   },
   {
     id: 'task-6',
@@ -275,6 +345,16 @@ export const INITIAL_TASKS: Task[] = [
     contractorRole: 'Engenheiro Chefe de Hardware CircuitLabs',
     contractorPhone: '+55 (41) 99123-4567',
     contractorWhatsapp: '5541991234567',
-    missionUrgency: 'moderada'
+    missionUrgency: 'moderada',
+    status: 'ativa',
+    city: 'Curitiba',
+    state: 'PR',
+    neighborhood: 'Batel',
+    country: 'Brasil',
+    postalCode: '80420-000',
+    latitude: -25.4372,
+    longitude: -49.2844,
+    scheduleTime: 'Horário flexível',
+    completenessScore: 100
   }
 ];

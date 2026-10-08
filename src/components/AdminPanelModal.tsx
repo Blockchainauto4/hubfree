@@ -38,10 +38,13 @@ import {
   UploadCloud,
   ShieldCheck,
   Terminal,
-  Database
+  Database,
+  Globe
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { AdminAssistantConfig, PlatformSettings, VideoSubmission, Task } from '../types';
+import { notifyIndexNow } from '../services/indexNowService';
+import { getTaskCanonicalPath } from '../utils/slugify';
 import {
   checkDatabaseHealth,
   repairDatabaseInconsistencies,
@@ -82,8 +85,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  // Active tab: 'postings' | 'sync' | 'moderation' | 'business' | 'ai'
-  const [activeTab, setActiveTab] = useState<'postings' | 'sync' | 'moderation' | 'business' | 'ai'>('postings');
+  // Active tab: 'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo'
+  const [activeTab, setActiveTab] = useState<'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo'>('postings');
 
   // Success toast state
   const [successToast, setSuccessToast] = useState<string | null>(null);
@@ -470,6 +473,45 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     showSuccess('Regras de Negócio e PIX atualizadas!');
   };
 
+  // SEO & Search Engine Discovery State
+  const [googleSiteVerification, setGoogleSiteVerification] = useState(platformSettings.googleSiteVerification || '');
+  const [bingSiteVerification, setBingSiteVerification] = useState(platformSettings.bingSiteVerification || '');
+  const [indexNowKey, setIndexNowKey] = useState(platformSettings.indexNowKey || 'freelahub2026indexnowkey');
+  const [isBroadcastingIndexNow, setIsBroadcastingIndexNow] = useState(false);
+  const [indexNowReport, setIndexNowReport] = useState<string | null>(null);
+
+  const handleSaveSeoSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedPlatform: PlatformSettings = {
+      ...platformSettings,
+      googleSiteVerification: googleSiteVerification.trim(),
+      bingSiteVerification: bingSiteVerification.trim(),
+      indexNowKey: indexNowKey.trim(),
+    };
+    onSavePlatformSettings(updatedPlatform);
+    showSuccess('Configurações de SEO, Search Console e IndexNow salvas com sucesso!');
+  };
+
+  const handleBroadcastIndexNow = async () => {
+    setIsBroadcastingIndexNow(true);
+    setIndexNowReport(null);
+    try {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://freelahub.com.br';
+      const urls = [
+        `${origin}/`,
+        `${origin}/vagas`,
+        ...tasks.map((t) => `${origin}${getTaskCanonicalPath(t)}`),
+      ];
+      const result = await notifyIndexNow(urls);
+      setIndexNowReport(result.message);
+      showSuccess(result.message);
+    } catch (err: any) {
+      setIndexNowReport(`Erro: ${err?.message || 'Falha ao conectar ao IndexNow'}`);
+    } finally {
+      setIsBroadcastingIndexNow(false);
+    }
+  };
+
   // Metrics
   const dailyMissionsCount = tasks.filter((t) => t.isDailyMission || (t.expiresInHours && t.expiresInHours <= 24)).length;
   const totalSlotsCount = tasks.reduce((acc, t) => acc + t.slotsTotal, 0);
@@ -600,6 +642,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           >
             <Sparkles className="w-4 h-4 shrink-0" />
             <span>Configurações Gemini IA</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('seo')}
+            className={`py-3.5 border-b-2 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shrink-0 ${
+              activeTab === 'seo'
+                ? 'border-[#00e575] text-[#00e575] font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Globe className="w-4 h-4 shrink-0" />
+            <span>SEO & Motores de Busca</span>
           </button>
         </div>
 
@@ -1710,6 +1765,197 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                 </button>
               </div>
             </form>
+          )}
+
+          {/* ======================================================== */}
+          {/* TAB 5: SEO, SEARCH ENGINES, INDEXNOW & AI DISCOVERY      */}
+          {/* ======================================================== */}
+          {activeTab === 'seo' && (
+            <div className="space-y-6">
+              <div className="bg-slate-950/80 border border-white/10 rounded-2xl p-5 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-950 border border-[#00e575]/30 text-[#00e575] flex items-center justify-center">
+                      <Globe className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white">
+                        Discovery, Motores de Busca & Google AI Search
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        Configuração centralizada para Google Search Console, Google Jobs, Bing, IndexNow e crawlers de IA.
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] bg-emerald-500/10 text-[#00e575] border border-emerald-500/20 px-2.5 py-1 rounded-full font-semibold">
+                    Indexação Ativa
+                  </span>
+                </div>
+
+                {/* Form to update verification keys */}
+                <form onSubmit={handleSaveSeoSettings} className="space-y-4 pt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Google Search Console */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                        <span>Google Search Console (GOOGLE_SITE_VERIFICATION)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={googleSiteVerification}
+                        onChange={(e) => setGoogleSiteVerification(e.target.value)}
+                        placeholder="Ex: dK8F9... (token fornecido no GSC)"
+                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                      />
+                      <p className="text-[10.5px] text-slate-500">
+                        Injeta a meta tag de verificação no cabeçalho HTML da página.
+                      </p>
+                    </div>
+
+                    {/* Bing Webmaster Tools */}
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                        <span>Bing Webmaster Tools (msvalidate.01)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={bingSiteVerification}
+                        onChange={(e) => setBingSiteVerification(e.target.value)}
+                        placeholder="Ex: 8A4B... (token do Bing Webmaster)"
+                        className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575]"
+                      />
+                      <p className="text-[10.5px] text-slate-500">
+                        Injeta a validação msvalidate.01 para rastreamento no Bing.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* IndexNow Key */}
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-300">
+                      Chave Protocolo IndexNow (INDEXNOW_KEY)
+                    </label>
+                    <input
+                      type="text"
+                      value={indexNowKey}
+                      onChange={(e) => setIndexNowKey(e.target.value)}
+                      placeholder="freelahub2026indexnowkey"
+                      className="w-full bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#00e575] font-mono"
+                    />
+                    <p className="text-[10.5px] text-slate-500">
+                      Arquivo de validação correspondente público em: <span className="text-emerald-400 font-mono">/freelahub2026indexnowkey.txt</span>
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <button
+                      type="submit"
+                      className="px-5 py-2.5 text-xs font-bold text-slate-950 bg-[#00e575] hover:bg-[#00ff87] rounded-xl transition-all shadow-md shadow-[#00e575]/25 flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Save className="w-4 h-4" />
+                      <span>Salvar Configurações de SEO</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleBroadcastIndexNow}
+                      disabled={isBroadcastingIndexNow}
+                      className="px-4 py-2 text-xs font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 text-[#00e575] ${isBroadcastingIndexNow ? 'animate-spin' : ''}`} />
+                      <span>{isBroadcastingIndexNow ? 'Notificando IndexNow...' : 'Disparar IndexNow para Vagas Ativas'}</span>
+                    </button>
+                  </div>
+
+                  {indexNowReport && (
+                    <div className="p-3 rounded-xl bg-slate-900 border border-emerald-500/30 text-emerald-300 text-xs">
+                      {indexNowReport}
+                    </div>
+                  )}
+                </form>
+              </div>
+
+              {/* Direct links to XML sitemap and robots.txt */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <a
+                  href="/sitemap.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-950/70 border border-white/10 hover:border-emerald-500/50 rounded-xl p-4 transition-all block group"
+                >
+                  <div className="flex items-center justify-between text-xs font-bold text-white group-hover:text-[#00e575]">
+                    <span>Sitemap XML Dinâmico</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#00e575]" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    /sitemap.xml gerado diretamente do NeonDB com canonical e lastmod.
+                  </p>
+                </a>
+
+                <a
+                  href="/robots.txt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-950/70 border border-white/10 hover:border-emerald-500/50 rounded-xl p-4 transition-all block group"
+                >
+                  <div className="flex items-center justify-between text-xs font-bold text-white group-hover:text-[#00e575]">
+                    <span>Robots.txt</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#00e575]" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Permite páginas públicas, declara o sitemap e bloqueia rotas /admin.
+                  </p>
+                </a>
+
+                <a
+                  href="/freelahub2026indexnowkey.txt"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-950/70 border border-white/10 hover:border-emerald-500/50 rounded-xl p-4 transition-all block group"
+                >
+                  <div className="flex items-center justify-between text-xs font-bold text-white group-hover:text-[#00e575]">
+                    <span>Validação IndexNow</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-[#00e575]" />
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Chave textual pública para confirmação do Bing e parceiros IndexNow.
+                  </p>
+                </a>
+              </div>
+
+              {/* Conformance Checklist */}
+              <div className="bg-slate-950/70 border border-white/10 rounded-2xl p-5 space-y-3">
+                <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                  Checklist de Conformidade Técnica & Diretrizes de Qualidade
+                </h5>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs text-slate-300">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>JobPosting JSON-LD exclusivo em páginas individuais</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>URLs canônicas permanentes /vagas/:slug</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>Vagas expiradas atualizam status e removem JobPosting</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>HTML semântico real para AI Overviews & leitores</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>Sitemap dinâmico sincronizado em tempo real</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-[#00e575] shrink-0" />
+                    <span>IndexNow notificado automaticamente na criação/edição</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
         </div>

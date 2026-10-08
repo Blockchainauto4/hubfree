@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /vagas
+Allow: /vagas/*
+Allow: /categorias/*
+Allow: /local/*
+Allow: /blog/*
+Allow: /termos
+Allow: /privacidade
+Allow: /sitemap.xml
+Allow: /feed.xml
+
+# Block internal administrative endpoints and private user data
+Disallow: /api/admin
+Disallow: /admin
+Disallow: /*?admin=*
+Disallow: /*?token=*
+
+Sitemap: https://freelahub.com.br/sitemap.xml

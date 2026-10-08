@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Search,
   Bell,
@@ -37,10 +37,18 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { Task, WorkLocationType } from '../types';
+import { requestUserLocation, filterTasksByRadius } from '../services/geoService';
+import { analytics } from '../services/analytics';
+import { applySeoMetadata, generateOrganizationSchema } from '../services/seoService';
 
 interface FreelancerCategoriesPageProps {
   tasks: Task[];
   onSelectTask: (task: Task) => void;
+  onNavigateToJobDetail?: (task: Task) => void;
+  onNavigateToCategory?: (category: string) => void;
+  onNavigateToCity?: (city: string) => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
   onOpenCreateTask: () => void;
   onOpenDailyMissions: () => void;
   onOpenVideoPage: () => void;
@@ -54,6 +62,11 @@ interface FreelancerCategoriesPageProps {
 export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> = ({
   tasks,
   onSelectTask,
+  onNavigateToJobDetail,
+  onNavigateToCategory,
+  onNavigateToCity,
+  onOpenPrivacy,
+  onOpenTerms,
   onOpenCreateTask,
   onOpenDailyMissions,
   onOpenVideoPage,
@@ -70,10 +83,52 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
   const [showNotifications, setShowNotifications] = useState(false);
   const [isPhoneMockupMode, setIsPhoneMockupMode] = useState(false);
   const [activeBottomTab, setActiveBottomTab] = useState<'home' | 'projetos' | 'mensagens' | 'perfil'>('home');
+  
+  // Geolocation and Proximity Radius State
+  const [userCoords, setUserCoords] = useState<{ lat: number; lng: number } | null>(null);
+  const [selectedRadius, setSelectedRadius] = useState<number | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  // Filter tasks based on query and filter pills
+  // Apply default page SEO metadata
+  useEffect(() => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://freelahub.com.br';
+    applySeoMetadata({
+      title: 'FreelaHub - Vagas Freelancer & Missões Diárias com PIX',
+      description: 'Plataforma oficial de oportunidades profissionais e tarefas de freelancer no Brasil. Pagamento até R$ 75/h, bônus em vídeo e saques via PIX.',
+      canonicalUrl: `${origin}/`,
+      ogType: 'website',
+      structuredDataJson: [generateOrganizationSchema()],
+    });
+    analytics.track('page_view', { page: 'home_categories' });
+  }, []);
+
+  const handleRequestLocation = async () => {
+    setIsLocating(true);
+    setLocationError(null);
+    try {
+      const loc = await requestUserLocation();
+      setUserCoords({ lat: loc.latitude, lng: loc.longitude });
+      setSelectedRadius(25); // Default 25km radius
+      analytics.track('location_permission_granted', { accuracy: loc.accuracy });
+    } catch (err: any) {
+      setLocationError(err.message || 'Permissão negada.');
+      analytics.track('location_permission_denied', {});
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
+  // Filter tasks based on query, filter pills, and geolocation radius
   const filteredTasks = useMemo(() => {
-    return tasks.filter((task) => {
+    let list = tasks;
+
+    // Radius filter if user location is active
+    if (userCoords && selectedRadius) {
+      list = filterTasksByRadius(list, userCoords.lat, userCoords.lng, selectedRadius);
+    }
+
+    return list.filter((task) => {
       // Search filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
@@ -81,7 +136,9 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
         const matchCat = task.category.toLowerCase().includes(q);
         const matchDesc = task.description.toLowerCase().includes(q);
         const matchComp = task.company.toLowerCase().includes(q);
-        if (!matchTitle && !matchCat && !matchDesc && !matchComp) return false;
+        const matchCity = task.city?.toLowerCase().includes(q);
+        const matchNeigh = task.neighborhood?.toLowerCase().includes(q);
+        if (!matchTitle && !matchCat && !matchDesc && !matchComp && !matchCity && !matchNeigh) return false;
       }
 
       // Filter pills
@@ -92,7 +149,7 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
 
       return true;
     });
-  }, [tasks, searchQuery, activeFilterTab]);
+  }, [tasks, searchQuery, activeFilterTab, userCoords, selectedRadius]);
 
   // Group tasks by category
   const categoriesMap = useMemo(() => {
@@ -412,7 +469,13 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
               <section key={categoryName} className="space-y-3">
                 {/* Section Header with Chevron '>' like screenshot */}
                 <div
-                  onClick={() => setSearchQuery(categoryName)}
+                  onClick={() => {
+                    if (onNavigateToCategory) {
+                      onNavigateToCategory(categoryName);
+                    } else {
+                      setSearchQuery(categoryName);
+                    }
+                  }}
                   className="flex items-center justify-between text-slate-900 cursor-pointer group select-none py-0.5"
                 >
                   <h2 className="text-[15px] sm:text-base font-bold tracking-tight text-slate-900 group-hover:text-[#00a859] transition-colors flex items-center gap-1.5">
@@ -521,7 +584,11 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
                             type="button"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onSelectTask(task);
+                              if (onNavigateToJobDetail) {
+                                onNavigateToJobDetail(task);
+                              } else {
+                                onSelectTask(task);
+                              }
                             }}
                             className="text-[#00a859] hover:text-[#008744] font-semibold text-xs flex items-center gap-1 cursor-pointer"
                           >
@@ -553,6 +620,66 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
             )}
           </button>
         </div>
+
+        {/* Discovery & Internal Linking Architecture for SEO & Search Engines */}
+        <section className="pt-8 pb-4 border-t border-slate-200/80 space-y-4 text-xs text-slate-600">
+          <div>
+            <h3 className="font-bold text-slate-800 text-[12px] uppercase tracking-wider mb-2">
+              Explorar por Categoria
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {Object.keys(categoriesMap).map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => onNavigateToCategory && onNavigateToCategory(cat)}
+                  className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-[#008744] hover:border-emerald-300 border border-slate-200 rounded-lg transition-colors cursor-pointer text-[11.5px]"
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold text-slate-800 text-[12px] uppercase tracking-wider mb-2">
+              Vagas por Localidade (SP)
+            </h3>
+            <div className="flex flex-wrap gap-1.5">
+              {['São Paulo', 'Campinas', 'Santos', 'Santo André', 'São Bernardo do Campo'].map((city) => (
+                <button
+                  key={city}
+                  type="button"
+                  onClick={() => onNavigateToCity && onNavigateToCity(city)}
+                  className="px-2.5 py-1 bg-white hover:bg-emerald-50 hover:text-[#008744] hover:border-emerald-300 border border-slate-200 rounded-lg transition-colors cursor-pointer text-[11.5px]"
+                >
+                  📍 {city}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span>© {new Date().getFullYear()} FreelaHub • Plataforma de Oportunidades</span>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onOpenPrivacy}
+                className="hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                Privacidade
+              </button>
+              <span>·</span>
+              <button
+                type="button"
+                onClick={onOpenTerms}
+                className="hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                Termos de Uso
+              </button>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* Bottom Navigation Bar with 5 icons matching screenshot */}

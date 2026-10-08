@@ -8,6 +8,9 @@
 
 import { Task, VideoSubmission } from '../types';
 import { INITIAL_TASKS } from '../data/initialTasks';
+import { notifyIndexNow } from './indexNowService';
+import { notifyGoogleIndexing } from './googleIndexingService';
+import { getTaskCanonicalPath } from '../utils/slugify';
 
 const STORAGE_KEY_TASKS = 'freelahub_vercel_tasks';
 const STORAGE_KEY_SUBMISSIONS = 'freelahub_vercel_submissions';
@@ -154,6 +157,17 @@ export async function saveTaskToDb(task: Task): Promise<void> {
 
   notifyDbChange();
 
+  // Notify Discovery & Search Engines (IndexNow + Google Indexing API)
+  try {
+    const canonicalPath = getTaskCanonicalPath(task);
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://freelahub.com.br';
+    const canonicalUrl = `${origin}${canonicalPath}`;
+    notifyIndexNow([canonicalUrl]).catch(() => null);
+    notifyGoogleIndexing(canonicalUrl, 'URL_UPDATED').catch(() => null);
+  } catch (err) {
+    // Non-blocking discovery error
+  }
+
   // Sync to Vercel Serverless Function
   try {
     await fetch('/api/tasks', {
@@ -183,6 +197,17 @@ export async function updateTaskInDb(task: Task): Promise<void> {
 
   notifyDbChange();
 
+  // Notify Discovery & Search Engines (IndexNow + Google Indexing API)
+  try {
+    const canonicalPath = getTaskCanonicalPath(task);
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://freelahub.com.br';
+    const canonicalUrl = `${origin}${canonicalPath}`;
+    notifyIndexNow([canonicalUrl]).catch(() => null);
+    notifyGoogleIndexing(canonicalUrl, 'URL_UPDATED').catch(() => null);
+  } catch (err) {
+    // Non-blocking discovery error
+  }
+
   try {
     await fetch('/api/tasks', {
       method: 'PUT',
@@ -210,6 +235,16 @@ export async function deleteTaskFromDb(taskId: string): Promise<void> {
   }
 
   notifyDbChange();
+
+  // Notify Discovery & Search Engines (IndexNow + Google Indexing API)
+  try {
+    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://freelahub.com.br';
+    const canonicalUrl = `${origin}/vagas/${taskId}`;
+    notifyIndexNow([canonicalUrl]).catch(() => null);
+    notifyGoogleIndexing(canonicalUrl, 'URL_DELETED').catch(() => null);
+  } catch (err) {
+    // Non-blocking discovery error
+  }
 
   try {
     await fetch(`/api/tasks?id=${encodeURIComponent(taskId)}`, {

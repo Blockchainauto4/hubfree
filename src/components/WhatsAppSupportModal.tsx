@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { MessageSquare, X, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { MessageSquare, X, Send, CheckCircle2, ShieldCheck, Phone, ExternalLink } from 'lucide-react';
+
+const SUPPORT_WHATSAPP_NUMBER = '5511991271914';
+const SUPPORT_WHATSAPP_DISPLAY = '+55 (11) 99127-1914';
 
 export const WhatsAppSupportModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,10 +10,15 @@ export const WhatsAppSupportModal: React.FC = () => {
   const [chatLog, setChatLog] = useState<Array<{ sender: 'bot' | 'user'; text: string; time: string }>>([
     {
       sender: 'bot',
-      text: 'Olá! Sou o atendente da equipe FreelasHub. Precisa de ajuda com o bônus em vídeo, suporte de cabeça ou saque via PIX?',
+      text: `Olá! Sou o atendente do suporte oficial FreelaHub. Você pode conversar diretamente com nossa equipe humana no WhatsApp ${SUPPORT_WHATSAPP_DISPLAY} ou tirar dúvidas rápidas aqui!`,
       time: '11:00',
     },
   ]);
+
+  const handleOpenDirectWhatsApp = () => {
+    const text = encodeURIComponent('Olá! Vim pelo FreelaHub e preciso de suporte com a plataforma.');
+    window.open(`https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${text}`, '_blank', 'noopener,noreferrer');
+  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,15 +32,15 @@ export const WhatsAppSupportModal: React.FC = () => {
 
     // Automated smart agent response
     setTimeout(() => {
-      let botResponse = 'Perfeito! Nossa equipe técnica confere todos os envios de vídeo em menos de 2 horas. Para receber o bônus integral, lembre-se de gravar em 1080p e manter ambas as mãos visíveis.';
+      let botResponse = `Nossa equipe técnica confere todos os envios em menos de 2 horas. Para falar diretamente com o suporte humano agora, clique no botão verde do WhatsApp (${SUPPORT_WHATSAPP_DISPLAY}).`;
       const lower = userText.toLowerCase();
 
       if (lower.includes('pix') || lower.includes('saque') || lower.includes('pagamento')) {
-        botResponse = 'Os saques PIX são processados diretamente na sua chave cadastrada (CPF, e-mail ou celular). Assim que o vídeo da tarefa diária for aprovado, o saldo fica 100% liberado para saque imediato!';
+        botResponse = 'Os saques PIX são processados diretamente na sua chave cadastrada. Assim que a tarefa diária ou bônus for aprovado, o saldo fica 100% liberado para saque imediato!';
       } else if (lower.includes('bonus') || lower.includes('bônus')) {
-        botResponse = 'O Bônus em Vídeo é concedido em tarefas que solicitam entrega no mesmo dia com qualidade Full HD (1080p60) e enquadramento em primeira pessoa (POV). Você pode faturar até +R$ 35 extras por tarefa!';
-      } else if (lower.includes('suporte') || lower.includes('cabeça') || lower.includes('camera') || lower.includes('celular')) {
-        botResponse = 'Para gravar em primeira pessoa, recomendamos um suporte elástico de cabeça (head-mount) ou peitoral. Qualquer celular com câmera padrão de 1080p é compatível.';
+        botResponse = 'O Bônus em Vídeo é concedido em tarefas com gravação em primeira pessoa (POV) e envio rápido. Você pode faturar até +R$ 35 extras por tarefa!';
+      } else if (lower.includes('suporte') || lower.includes('humano') || lower.includes('atendente') || lower.includes('telefone')) {
+        botResponse = `Você pode falar diretamente com nossa equipe no WhatsApp oficial: ${SUPPORT_WHATSAPP_DISPLAY}. Clique em "Abrir no WhatsApp Oficial" abaixo!`;
       }
 
       setChatLog((prev) => [
@@ -43,7 +51,7 @@ export const WhatsAppSupportModal: React.FC = () => {
           time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
-    }, 700);
+    }, 600);
   };
 
   return (
@@ -82,16 +90,38 @@ export const WhatsAppSupportModal: React.FC = () => {
                 <div className="text-xs font-bold leading-tight">Suporte FreelaHub</div>
                 <div className="text-[10px] text-emerald-100 flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00ff87] animate-pulse" />
-                  Online agora · Resposta rápida
+                  {SUPPORT_WHATSAPP_DISPLAY}
                 </div>
               </div>
             </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={handleOpenDirectWhatsApp}
+                className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer transition-colors"
+                title="Abrir no aplicativo WhatsApp (+55 11 99127-1914)"
+              >
+                <ExternalLink className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded hover:bg-white/10 text-white cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* Direct WhatsApp Callout Banner */}
+          <div className="bg-emerald-950/90 border-b border-emerald-500/20 px-3 py-2 flex items-center justify-between gap-2 text-[11px] text-emerald-200">
+            <span>Atendimento via WhatsApp: <strong>{SUPPORT_WHATSAPP_DISPLAY}</strong></span>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded hover:bg-white/10 text-white cursor-pointer"
+              onClick={handleOpenDirectWhatsApp}
+              className="px-2 py-0.5 rounded-md bg-[#25D366] text-slate-950 font-bold hover:bg-[#20ba59] transition-colors cursor-pointer text-[10px]"
             >
-              <X className="w-4 h-4" />
+              Abrir App
             </button>
           </div>
 

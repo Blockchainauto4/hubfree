@@ -40,4 +40,8 @@ export const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = {
   autoApprovePix: true,
   announcementBannerText: '🔥 Bônus em Vídeo Dobrado Hoje: Ganhe até +R$ 35 extras por gravação 1080p enviada até as 22h!',
   isAnnouncementActive: true,
+  googleSiteVerification: '',
+  bingSiteVerification: '',
+  indexNowKey: 'freelahub2026indexnowkey',
+  appUrl: 'https://freelahub.com.br',
 };

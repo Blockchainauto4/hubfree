@@ -26,7 +26,8 @@ export default async function handler(req: any, res: any) {
             video_bonus, bonus_condition, has_active_bonus, slots_total, slots_filled,
             duration_minutes, image, description, requirements, equipment_needed,
             posted_date, is_urgent, is_daily_mission, expires_in_hours,
-            contractor_phone, contractor_whatsapp, contractor_contact_name
+            contractor_phone, contractor_whatsapp, contractor_contact_name,
+            city, state, neighborhood, postal_code, latitude, longitude
           ) VALUES (
             ${t.id}, ${t.title}, ${t.company}, ${t.locationType}, ${t.category},
             ${t.basePay}, ${t.payType || 'hora'}, ${t.videoBonus || 0}, ${t.bonusCondition || ''},
@@ -35,13 +36,17 @@ export default async function handler(req: any, res: any) {
             ${JSON.stringify(t.requirements || [])}, ${JSON.stringify(t.equipmentNeeded || [])},
             ${t.postedDate || 'Hoje'}, ${t.isUrgent || false}, ${t.isDailyMission || false},
             ${t.expiresInHours || 24}, ${t.contractorPhone || null},
-            ${t.contractorWhatsapp || null}, ${t.contractorContactName || null}
+            ${t.contractorWhatsapp || null}, ${t.contractorContactName || null},
+            ${t.city || 'São Paulo'}, ${t.state || 'SP'}, ${t.neighborhood || null},
+            ${t.postalCode || null}, ${t.latitude || null}, ${t.longitude || null}
           )
           ON CONFLICT (id) DO UPDATE SET
             slots_filled = EXCLUDED.slots_filled,
             has_active_bonus = EXCLUDED.has_active_bonus,
             contractor_phone = EXCLUDED.contractor_phone,
-            contractor_whatsapp = EXCLUDED.contractor_whatsapp;
+            contractor_whatsapp = EXCLUDED.contractor_whatsapp,
+            city = EXCLUDED.city,
+            neighborhood = EXCLUDED.neighborhood;
         `;
         return res.status(200).json({ success: true, task: t });
       }
@@ -60,7 +65,10 @@ export default async function handler(req: any, res: any) {
           expires_at as "expiresAt",
           contractor_phone as "contractorPhone",
           contractor_whatsapp as "contractorWhatsapp",
-          contractor_contact_name as "contractorContactName"
+          contractor_contact_name as "contractorContactName",
+          city, state, neighborhood,
+          postal_code as "postalCode",
+          latitude, longitude
         FROM tasks
         ORDER BY created_at DESC;
       `;

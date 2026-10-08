@@ -42,6 +42,12 @@ CREATE TABLE IF NOT EXISTS tasks (
     contractor_phone VARCHAR(64),
     contractor_whatsapp VARCHAR(64),
     contractor_contact_name VARCHAR(255),
+    city VARCHAR(128) DEFAULT 'São Paulo',
+    state VARCHAR(32) DEFAULT 'SP',
+    neighborhood VARCHAR(128),
+    postal_code VARCHAR(32),
+    latitude NUMERIC(10, 6),
+    longitude NUMERIC(10, 6),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

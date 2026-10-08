@@ -4,9 +4,16 @@ import { ShieldCheck } from 'lucide-react';
 interface FooterProps {
   onOpenHowItWorks: () => void;
   onOpenCreateTask: () => void;
+  onOpenPrivacy?: () => void;
+  onOpenTerms?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTask }) => {
+export const Footer: React.FC<FooterProps> = ({
+  onOpenHowItWorks,
+  onOpenCreateTask,
+  onOpenPrivacy,
+  onOpenTerms,
+}) => {
   return (
     <footer className="border-t border-white/10 bg-slate-950 py-8 sm:py-12 text-slate-400 text-xs">
       <div className="max-w-7xl mx-auto px-3.5 sm:px-6 lg:px-8">
@@ -109,9 +116,21 @@ export const Footer: React.FC<FooterProps> = ({ onOpenHowItWorks, onOpenCreateTa
             © {new Date().getFullYear()} FreelaHub. Todos os direitos reservados.
           </div>
           <div className="flex items-center gap-3">
-            <span>Privacidade</span>
+            <button
+              type="button"
+              onClick={onOpenPrivacy}
+              className="hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              Privacidade
+            </button>
             <span aria-hidden="true">·</span>
-            <span>Termos de Uso</span>
+            <button
+              type="button"
+              onClick={onOpenTerms}
+              className="hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              Termos de Uso
+            </button>
             <span aria-hidden="true">·</span>
             <span className="text-emerald-400">Deploy Vercel Ready</span>
           </div>

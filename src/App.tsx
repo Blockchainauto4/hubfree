@@ -21,6 +21,10 @@ import { GeminiAssistantModal } from './components/GeminiAssistantModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
 import { DailyMissionsModal } from './components/DailyMissionsModal';
 import { FreelancerCategoriesPage } from './components/FreelancerCategoriesPage';
+import { JobDetailPage } from './components/JobDetailPage';
+import { CategoryLandingPage } from './components/CategoryLandingPage';
+import { LegalPage } from './components/LegalPage';
+import { getTaskCanonicalPath, extractTaskIdFromSlug, slugify } from './utils/slugify';
 import { INITIAL_TASKS } from './data/initialTasks';
 import { DEFAULT_ASSISTANT_CONFIG, DEFAULT_PLATFORM_SETTINGS } from './data/defaultAdminConfig';
 import { Task, WorkLocationType, VideoSubmission, AdminAssistantConfig, PlatformSettings } from './types';
@@ -124,6 +128,32 @@ export default function App() {
   const [isDailyMissionsOpen, setIsDailyMissionsOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
   const [activeView, setActiveView] = useState<'categories' | 'video'>('categories');
+
+  // Client-side Router matching window.location.pathname
+  const [currentPath, setCurrentPath] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return window.location.pathname || '/';
+    }
+    return '/';
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname || '/');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigate = (path: string) => {
+    if (typeof window !== 'undefined') {
+      if (window.location.pathname !== path) {
+        window.history.pushState({}, '', path);
+      }
+      setCurrentPath(path);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   // Admin Assistant and Platform Configuration
   const [assistantConfig, setAssistantConfig] = useState<AdminAssistantConfig>(() => {
@@ -274,78 +304,177 @@ export default function App() {
         </div>
       )}
 
-      {/* Main View: Freelancer Categories Page (Default as requested by user) OR Video POV Page */}
-      {activeView === 'categories' ? (
-        <FreelancerCategoriesPage
-          tasks={tasks}
-          onSelectTask={(task) => setSelectedTask(task)}
-          onOpenCreateTask={() => setIsCreateTaskOpen(true)}
-          onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
-          onOpenVideoPage={() => setActiveView('video')}
-          onOpenWallet={() => setIsWalletOpen(true)}
-          onOpenAuth={handleOpenAuth}
-          onOpenAdmin={() => setIsAdminOpen(true)}
-          currentUser={currentUser}
-          walletBalance={walletBalance}
-        />
-      ) : (
-        <>
-          {/* Navigation Header for Video Page */}
-          <Header
-            onOpenCreateTask={() => setIsCreateTaskOpen(true)}
-            onOpenWallet={() => setIsWalletOpen(true)}
-            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
-            onOpenAuth={handleOpenAuth}
-            onOpenGemini={() => setIsGeminiOpen(true)}
-            onOpenAdmin={() => setIsAdminOpen(true)}
-            onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
-            onNavigateToCategories={() => setActiveView('categories')}
-            dailyMissionsCount={dailyMissionsCount}
-            walletBalance={walletBalance}
-            currentUser={currentUser}
-          />
+      {/* Main Content Area resolved by Client-Side Route */}
+      {(() => {
+        // 1. Legal Pages
+        if (currentPath === '/privacidade') {
+          return <LegalPage type="privacidade" onBack={() => navigate('/')} />;
+        }
+        if (currentPath === '/termos') {
+          return <LegalPage type="termos" onBack={() => navigate('/')} />;
+        }
 
-          {/* Main Content Area of Video Page */}
-          <main className="flex-1">
-            {/* Hub de Vagas Freelancer no Início do Projeto */}
-            <DailyTasksFeed
+        // 2. Individual Job Page: /vagas/:slug
+        if (currentPath.startsWith('/vagas/') && currentPath.length > 7) {
+          const slug = currentPath.replace('/vagas/', '');
+          const taskId = extractTaskIdFromSlug(slug);
+          const matchedTask = tasks.find(
+            (t) => t.id === taskId || getTaskCanonicalPath(t) === currentPath || slugify(t.title) === slug
+          );
+
+          if (matchedTask) {
+            return (
+              <JobDetailPage
+                task={matchedTask}
+                allTasks={tasks}
+                onBack={() => navigate('/')}
+                onNavigateToTask={(t) => navigate(getTaskCanonicalPath(t))}
+                onNavigateToCategory={(cat) => navigate(`/categorias/${slugify(cat)}`)}
+                onNavigateToCity={(city) => navigate(`/local/sp/${slugify(city)}`)}
+                onOpenApplyModal={(t) => setSelectedTask(t)}
+              />
+            );
+          }
+
+          // If job slug not found, show friendly discovery 404
+          return (
+            <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 text-center max-w-lg mx-auto space-y-4">
+              <div className="w-16 h-16 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl font-bold">
+                🔍
+              </div>
+              <h2 className="text-xl font-bold text-white">Vaga não encontrada ou expirada</h2>
+              <p className="text-xs text-slate-400">
+                Esta oportunidade pode ter atingido o limite de vagas ou expirado seu prazo de 24 horas.
+              </p>
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="px-5 py-2.5 bg-[#00a859] hover:bg-[#00964f] text-white text-xs font-bold rounded-xl transition-all cursor-pointer"
+              >
+                Ver Todas as Vagas Disponíveis
+              </button>
+            </div>
+          );
+        }
+
+        // 3. Category Landing Page: /categorias/:slug
+        if (currentPath.startsWith('/categorias/') && currentPath.length > 12) {
+          const catSlug = currentPath.replace('/categorias/', '');
+          const matched = tasks.find((t) => slugify(t.category) === catSlug);
+          const categoryName = matched ? matched.category : catSlug;
+
+          return (
+            <CategoryLandingPage
+              type="category"
+              value={categoryName}
               tasks={tasks}
-              selectedLocation={locationFilter}
-              onSelectLocation={(loc) => setLocationFilter(loc)}
-              onSelectTask={(task) => setSelectedTask(task)}
-              onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+              onBack={() => navigate('/')}
+              onSelectTask={(t) => navigate(getTaskCanonicalPath(t))}
               onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
             />
+          );
+        }
 
-            {/* Hero Section & Apresentação da Plataforma */}
-            <Hero
-              locationFilter={locationFilter}
-              onChangeLocation={(loc) => setLocationFilter(loc)}
-              onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
-              onExploreTasks={handleScrollToTasks}
+        // 4. City / Local Landing Page: /local/:estado/:cidade
+        if (currentPath.startsWith('/local/') && currentPath.length > 7) {
+          const parts = currentPath.split('/').filter(Boolean);
+          const citySlug = parts[2] || parts[1] || '';
+          const matched = tasks.find((t) => t.city && slugify(t.city) === citySlug);
+          const cityName = matched?.city || 'São Paulo';
+
+          return (
+            <CategoryLandingPage
+              type="city"
+              value={cityName}
+              tasks={tasks}
+              onBack={() => navigate('/')}
+              onSelectTask={(t) => navigate(getTaskCanonicalPath(t))}
               onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
             />
+          );
+        }
 
-            {/* Interactive Earnings Simulator */}
-            <EarningsCalculator onExploreTasks={handleScrollToTasks} />
+        // 5. Video POV Page (/video or activeView === 'video')
+        if (currentPath === '/video' || activeView === 'video') {
+          return (
+            <>
+              <Header
+                onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+                onOpenWallet={() => setIsWalletOpen(true)}
+                onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+                onOpenAuth={handleOpenAuth}
+                onOpenGemini={() => setIsGeminiOpen(true)}
+                onOpenAdmin={() => setIsAdminOpen(true)}
+                onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+                onNavigateToCategories={() => {
+                  setActiveView('categories');
+                  navigate('/');
+                }}
+                dailyMissionsCount={dailyMissionsCount}
+                walletBalance={walletBalance}
+                currentUser={currentUser}
+              />
 
-            {/* Starter Kit & Recording Setup */}
-            <StarterKitSection />
+              <main className="flex-1">
+                <DailyTasksFeed
+                  tasks={tasks}
+                  selectedLocation={locationFilter}
+                  onSelectLocation={(loc) => setLocationFilter(loc)}
+                  onSelectTask={(task) => setSelectedTask(task)}
+                  onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+                  onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+                />
 
-            {/* FAQ Section */}
-            <FAQSection />
-          </main>
+                <Hero
+                  locationFilter={locationFilter}
+                  onChangeLocation={(loc) => setLocationFilter(loc)}
+                  onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+                  onExploreTasks={handleScrollToTasks}
+                  onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+                />
 
-          {/* Footer */}
-          <Footer
-            onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+                <EarningsCalculator onExploreTasks={handleScrollToTasks} />
+                <StarterKitSection />
+                <FAQSection />
+              </main>
+
+              <Footer
+                onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
+                onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+                onOpenPrivacy={() => navigate('/privacidade')}
+                onOpenTerms={() => navigate('/termos')}
+              />
+            </>
+          );
+        }
+
+        // 6. Default: Freelancer Categories Page (Hub no Topo)
+        return (
+          <FreelancerCategoriesPage
+            tasks={tasks}
+            onSelectTask={(task) => setSelectedTask(task)}
+            onNavigateToJobDetail={(task) => navigate(getTaskCanonicalPath(task))}
+            onNavigateToCategory={(cat) => navigate(`/categorias/${slugify(cat)}`)}
+            onNavigateToCity={(city) => navigate(`/local/sp/${slugify(city)}`)}
+            onOpenPrivacy={() => navigate('/privacidade')}
+            onOpenTerms={() => navigate('/termos')}
+            onOpenVideoPage={() => {
+              setActiveView('video');
+              navigate('/video');
+            }}
             onOpenCreateTask={() => setIsCreateTaskOpen(true)}
+            onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
+            onOpenWallet={() => setIsWalletOpen(true)}
+            onOpenAuth={handleOpenAuth}
+            onOpenAdmin={() => setIsAdminOpen(true)}
+            currentUser={currentUser}
+            walletBalance={walletBalance}
           />
+        );
+      })()}
 
-          {/* Floating WhatsApp Support matching user's screenshot button */}
-          <WhatsAppSupportModal />
-        </>
-      )}
+      {/* Floating WhatsApp Support Widget (+55 11 99127-1914) visible across all views */}
+      <WhatsAppSupportModal />
 
       {/* Interactive Modals */}
       <TaskDetailModal

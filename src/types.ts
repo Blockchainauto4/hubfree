@@ -1,7 +1,18 @@
 export type WorkLocationType = 'all' | 'workplace' | 'home';
 
+export interface UserLocation {
+  latitude: number;
+  longitude: number;
+  city?: string;
+  state?: string;
+  neighborhood?: string;
+  accuracy?: number;
+  permission: 'prompt' | 'granted' | 'denied';
+}
+
 export interface Task {
   id: string;
+  slug?: string; // URL permanente canônica ex: /vagas/montagem-eletrica-sp-task-1
   title: string;
   company: string;
   locationType: 'workplace' | 'home';
@@ -18,7 +29,12 @@ export interface Task {
   description: string;
   requirements: string[];
   equipmentNeeded: string[];
+  benefits?: string[];
+  officialLink?: string;
   postedDate: string;
+  updatedAt?: string;
+  scheduleTime?: string; // ex: "08:00 às 17:00" ou "Horário flexível"
+  status?: 'ativa' | 'expirada' | 'preenchida';
   isUrgent?: boolean;
   isDailyMission?: boolean; // Missão diária de resgate rápido (expira no prazo de 24h)
   expiresAt?: string; // Data/hora limite de expiração ISO string
@@ -28,6 +44,17 @@ export interface Task {
   contractorContactName?: string; // Nome do responsável/coordenador da vaga
   contractorRole?: string; // Cargo/departamento do contratante
   missionUrgency?: 'critica' | 'alta' | 'moderada'; // Nível de urgência da missão de 24h
+  
+  // Camada de Geolocalização (Seções 22-25)
+  city?: string; // ex: 'São Paulo'
+  state?: string; // ex: 'SP'
+  neighborhood?: string; // ex: 'Moema', 'Pinheiros', 'Centro'
+  country?: string; // 'Brasil'
+  postalCode?: string; // CEP
+  latitude?: number; // Latitude decimal
+  longitude?: number; // Longitude decimal
+  distanceKm?: number; // Calculado dinamicamente em relação ao usuário
+  completenessScore?: number; // Score de completude interna (0-100)
 }
 
 export interface VideoSubmission {
@@ -63,5 +90,9 @@ export interface PlatformSettings {
   autoApprovePix: boolean;
   announcementBannerText: string;
   isAnnouncementActive: boolean;
+  googleSiteVerification?: string;
+  bingSiteVerification?: string;
+  indexNowKey?: string;
+  appUrl?: string;
 }
 

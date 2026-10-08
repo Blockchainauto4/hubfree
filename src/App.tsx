@@ -39,79 +39,70 @@ import {
 } from './services/dbService';
 
 export default function App() {
-  // Tasks state with localStorage persistence
+  // Tasks state with localStorage persistence - strictly real vacancies
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
-      const saved = localStorage.getItem('freelashub_tasks');
-      if (saved) return JSON.parse(saved);
+      const saved = localStorage.getItem('freelahub_tasks') || localStorage.getItem('freelashub_tasks');
+      if (saved) {
+        const parsed: Task[] = JSON.parse(saved);
+        const hasMock = parsed.some(
+          (t) =>
+            t.id?.startsWith('task-1') ||
+            t.id?.startsWith('task-2') ||
+            t.id?.startsWith('task-home-') ||
+            t.title?.toLowerCase().includes('quadro de distribuição') ||
+            t.title?.toLowerCase().includes('pastilhas e sangria') ||
+            t.title?.toLowerCase().includes('eletricista') ||
+            t.title?.toLowerCase().includes('mecânico')
+        );
+        const hasRealTasks =
+          parsed.some((t) => t.id === 'vaga-barman-vila-clementino-1010') &&
+          parsed.some((t) => t.id === 'vaga-seguranca-jurubatuba-1010') &&
+          parsed.some((t) => t.id === 'vaga-promotora-posto-graal-bandeirantes');
+
+        if (!hasMock && hasRealTasks && parsed.length > 0) {
+          return parsed;
+        }
+      }
     } catch (e) {
       console.warn('Could not read tasks from localStorage', e);
     }
     return INITIAL_TASKS;
   });
 
-  // Wallet and submissions state
+  // Wallet and submissions state (no demonstration data)
   const [walletBalance, setWalletBalance] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem('freelashub_wallet_balance');
+      const saved = localStorage.getItem('freelahub_wallet_balance') || localStorage.getItem('freelashub_wallet_balance');
       if (saved) return Number(saved);
     } catch (e) {
       console.warn(e);
     }
-    return 130.0; // Initial sample approved balance to explore
+    return 0.0;
   });
 
   const [bonusAccumulated, setBonusAccumulated] = useState<number>(() => {
     try {
-      const saved = localStorage.getItem('freelashub_bonus_acc');
+      const saved = localStorage.getItem('freelahub_bonus_acc') || localStorage.getItem('freelashub_bonus_acc');
       if (saved) return Number(saved);
     } catch (e) {
       console.warn(e);
     }
-    return 55.0;
+    return 0.0;
   });
 
   const [submissions, setSubmissions] = useState<VideoSubmission[]>(() => {
     try {
-      const saved = localStorage.getItem('freelashub_submissions');
-      if (saved) return JSON.parse(saved);
+      const saved = localStorage.getItem('freelahub_submissions') || localStorage.getItem('freelashub_submissions');
+      if (saved) {
+        const parsed: VideoSubmission[] = JSON.parse(saved);
+        const hasMock = parsed.some((s) => s.id === 'sub-sample-1' || s.freelancerName === 'Carlos Silva');
+        if (!hasMock) return parsed;
+      }
     } catch (e) {
       console.warn(e);
     }
-    return [
-      {
-        id: 'sub-sample-1',
-        taskId: 'task-1',
-        taskTitle: 'Montagem de Quadro de Distribuição Elétrica Trifásica',
-        freelancerName: 'Carlos Silva',
-        pixKey: 'carlos.eletrica@gmail.com',
-        pixType: 'email',
-        submittedAt: 'Hoje às 08:45',
-        status: 'approved',
-        baseEarned: 60,
-        bonusEarned: 30,
-        totalEarned: 90,
-        videoFileName: 'painel_eletrico_pov_1080p.mp4',
-        resolution: '1080p',
-        fps: 60,
-      },
-      {
-        id: 'sub-sample-2',
-        taskId: 'task-4',
-        taskTitle: 'Preparo e Sovagem de Pão Rústico',
-        freelancerName: 'Carlos Silva',
-        pixKey: 'carlos.eletrica@gmail.com',
-        pixType: 'email',
-        submittedAt: 'Hoje às 09:12',
-        status: 'approved',
-        baseEarned: 40,
-        bonusEarned: 25,
-        totalEarned: 65,
-        videoFileName: 'pao_artesanal_pov_hd.mp4',
-        resolution: '1080p',
-        fps: 60,
-      },
-    ];
+    return [];
   });
 
   // Location filter state ('all' | 'workplace' | 'home')
@@ -219,10 +210,10 @@ export default function App() {
   // Sync state to localStorage backup
   useEffect(() => {
     try {
-      localStorage.setItem('freelashub_tasks', JSON.stringify(tasks));
-      localStorage.setItem('freelashub_wallet_balance', walletBalance.toString());
-      localStorage.setItem('freelashub_bonus_acc', bonusAccumulated.toString());
-      localStorage.setItem('freelashub_submissions', JSON.stringify(submissions));
+      localStorage.setItem('freelahub_tasks', JSON.stringify(tasks));
+      localStorage.setItem('freelahub_wallet_balance', walletBalance.toString());
+      localStorage.setItem('freelahub_bonus_acc', bonusAccumulated.toString());
+      localStorage.setItem('freelahub_submissions', JSON.stringify(submissions));
     } catch (e) {
       console.warn('Storage sync failed', e);
     }

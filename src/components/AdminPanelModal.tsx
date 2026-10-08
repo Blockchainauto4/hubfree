@@ -174,39 +174,37 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   // ----------------------------------------------------
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskTitle, setTaskTitle] = useState('');
-  const [taskCompany, setTaskCompany] = useState('FreelaHub AI Datasets');
-  const [taskCategory, setTaskCategory] = useState<Task['category']>('Mecânica');
+  const [taskCompany, setTaskCompany] = useState('Central de Eventos FreelaHub');
+  const [taskCategory, setTaskCategory] = useState<Task['category']>('Eventos');
   const [taskLocationType, setTaskLocationType] = useState<'workplace' | 'home'>('workplace');
-  const [taskBasePay, setTaskBasePay] = useState<number>(60);
-  const [taskPayType, setTaskPayType] = useState<'hora' | 'vídeo'>('hora');
-  const [taskDuration, setTaskDuration] = useState<number>(45);
-  const [taskSlotsTotal, setTaskSlotsTotal] = useState<number>(10);
-  const [taskImage, setTaskImage] = useState('/src/assets/images/video_task_workshop_pov_1791299034671.jpg');
+  const [taskBasePay, setTaskBasePay] = useState<number>(180);
+  const [taskPayType, setTaskPayType] = useState<Task['payType']>('diária');
+  const [taskDuration, setTaskDuration] = useState<number>(480);
+  const [taskSlotsTotal, setTaskSlotsTotal] = useState<number>(5);
+  const [taskImage, setTaskImage] = useState('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskRequirements, setTaskRequirements] = useState<string[]>([
-    'Gravação em primeira pessoa (POV) com mãos livres',
-    'Vídeo contínuo sem cortes nas ações principais',
-    'Boa iluminação frontal sem sombras intensas',
+    'Pontualidade e vestimenta adequada para o evento',
+    'Disponibilidade no horário e local informado',
   ]);
   const [newRequirement, setNewRequirement] = useState('');
   const [taskEquipment, setTaskEquipment] = useState<string[]>([
-    'Suporte de celular para cabeça ou peito',
-    'Smartphone com câmera 1080p ou 4K',
+    'Smartphone para contato e comprovação de presença',
   ]);
   const [newEquipment, setNewEquipment] = useState('');
 
   // Daily Mission & Contractor Contact Fields
   const [taskIsDailyMission, setTaskIsDailyMission] = useState(true);
-  const [taskExpiresInHours, setTaskExpiresInHours] = useState<number>(12);
-  const [taskContractorName, setTaskContractorName] = useState('Eng. Equipe FreelaHub');
-  const [taskContractorPhone, setTaskContractorPhone] = useState('+55 (11) 98765-4321');
-  const [taskContractorRole, setTaskContractorRole] = useState('Coordenador Operacional FreelaHub');
+  const [taskExpiresInHours, setTaskExpiresInHours] = useState<number>(24);
+  const [taskContractorName, setTaskContractorName] = useState('Coordenador de Escala');
+  const [taskContractorPhone, setTaskContractorPhone] = useState('+55 (11) 98425-4091');
+  const [taskContractorRole, setTaskContractorRole] = useState('Central de Vagas');
   const [taskUrgency, setTaskUrgency] = useState<'critica' | 'alta' | 'moderada'>('alta');
 
   // Video Bonus Fields
   const [taskHasBonus, setTaskHasBonus] = useState(true);
-  const [taskVideoBonus, setTaskVideoBonus] = useState<number>(25);
-  const [taskBonusCondition, setTaskBonusCondition] = useState('Envio em resolução 1080p60 em até 8h após iniciar a tarefa');
+  const [taskVideoBonus, setTaskVideoBonus] = useState<number>(30);
+  const [taskBonusCondition, setTaskBonusCondition] = useState('Gravação POV da atividade e conferência de serviço');
 
   // Search & Filter for tasks list in Admin
   const [searchTaskQuery, setSearchTaskQuery] = useState('');
@@ -217,33 +215,30 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const handleResetForm = () => {
     setEditingTaskId(null);
     setTaskTitle('');
-    setTaskCompany('FreelaHub AI Datasets');
-    setTaskCategory('Mecânica');
+    setTaskCompany('Central de Eventos FreelaHub');
+    setTaskCategory('Eventos');
     setTaskLocationType('workplace');
-    setTaskBasePay(60);
-    setTaskPayType('hora');
-    setTaskDuration(45);
-    setTaskSlotsTotal(10);
-    setTaskImage('/src/assets/images/video_task_workshop_pov_1791299034671.jpg');
+    setTaskBasePay(180);
+    setTaskPayType('diária');
+    setTaskDuration(480);
+    setTaskSlotsTotal(5);
+    setTaskImage('https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=800&q=80');
     setTaskDescription('');
     setTaskRequirements([
-      'Gravação em primeira pessoa (POV) com mãos livres',
-      'Vídeo contínuo sem cortes nas ações principais',
-      'Boa iluminação frontal sem sombras intensas',
+      'Pontualidade e vestimenta adequada para o evento',
+      'Disponibilidade no horário e local informado',
     ]);
     setTaskEquipment([
-      'Suporte de celular para cabeça ou peito',
-      'Smartphone com câmera 1080p ou 4K',
+      'Smartphone para contato e comprovação de presença',
     ]);
     setTaskIsDailyMission(true);
-    setTaskExpiresInHours(12);
-    setTaskContractorName('Eng. Equipe FreelaHub');
-    setTaskContractorPhone('+55 (11) 98765-4321');
-    setTaskContractorRole('Coordenador Operacional FreelaHub');
+    setTaskExpiresInHours(24);
+    setTaskContractorName('Coordenador de Escala');
+    setTaskContractorPhone('+55 (11) 98425-4091');
     setTaskUrgency('alta');
     setTaskHasBonus(true);
-    setTaskVideoBonus(25);
-    setTaskBonusCondition('Envio em resolução 1080p60 em até 8h após iniciar a tarefa');
+    setTaskVideoBonus(30);
+    setTaskBonusCondition('Gravação POV da atividade e conferência de serviço');
   };
 
   // Populate form for editing

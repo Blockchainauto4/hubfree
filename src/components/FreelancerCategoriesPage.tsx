@@ -182,6 +182,20 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
 
   const categoryIcon = (categoryName: string) => {
     const cat = categoryName.toLowerCase();
+    if (cat.includes('evento') || cat.includes('bar') || cat.includes('promot')) {
+      return (
+        <div className="w-13 h-13 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0 border border-purple-200/80 shadow-2xs">
+          <Sparkles className="w-6 h-6 stroke-[2]" />
+        </div>
+      );
+    }
+    if (cat.includes('seguran') || cat.includes('portaria') || cat.includes('vigil')) {
+      return (
+        <div className="w-13 h-13 rounded-xl bg-blue-50 flex items-center justify-center text-blue-700 shrink-0 border border-blue-200/80 shadow-2xs">
+          <ShieldCheck className="w-6 h-6 stroke-[2]" />
+        </div>
+      );
+    }
     if (cat.includes('manuten') || cat.includes('casa')) {
       return (
         <div className="w-13 h-13 rounded-xl bg-emerald-50 flex items-center justify-center text-[#00a859] shrink-0 border border-emerald-200/80 shadow-2xs">
@@ -196,14 +210,7 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
         </div>
       );
     }
-    if (cat.includes('tecno') || cat.includes('digital') || cat.includes('ti')) {
-      return (
-        <div className="w-13 h-13 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600 shrink-0 border border-purple-200/80 shadow-2xs">
-          <Laptop className="w-6 h-6 stroke-[2]" />
-        </div>
-      );
-    }
-    if (cat.includes('culin') || cat.includes('cozinha') || cat.includes('pão')) {
+    if (cat.includes('culin') || cat.includes('cozinha')) {
       return (
         <div className="w-13 h-13 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 shrink-0 border border-amber-200/80 shadow-2xs">
           <Utensils className="w-6 h-6 stroke-[2]" />
@@ -212,7 +219,7 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
     }
     return (
       <div className="w-13 h-13 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 shrink-0 border border-slate-200 shadow-2xs">
-        <Hammer className="w-6 h-6 stroke-[2]" />
+        <Briefcase className="w-6 h-6 stroke-[2]" />
       </div>
     );
   };
@@ -275,10 +282,10 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
                     >
                       <p className="font-bold text-amber-900 flex items-center gap-1.5 text-xs">
                         <Flame className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                        Missão Diária expira em 5h!
+                        Vagas de Barman, Segurança & Evento!
                       </p>
                       <p className="text-slate-600 text-[11.5px] mt-1 leading-snug">
-                        Veja o número do contratante na vaga de Manutenção Residencial.
+                        Veja o número e WhatsApp direto dos contratantes para 10/10.
                       </p>
                     </div>
                     <div
@@ -564,13 +571,13 @@ export const FreelancerCategoriesPage: React.FC<FreelancerCategoriesPageProps> =
                           {/* Right: Pricing Box with clear readable typography */}
                           <div className="text-right shrink-0 flex flex-col items-end pl-1">
                             <span className="text-[10px] font-medium text-slate-500 uppercase tracking-tight">
-                              Renda esperada
+                              Renda oficial
                             </span>
                             <span className="text-xl sm:text-[22px] font-bold text-[#00a859] tracking-tight leading-tight mt-0.5">
-                              R$ {task.basePay}/h
+                              R$ {task.basePay}{task.payType === 'diária' ? '/dia' : task.payType === 'evento' ? '/evento' : task.payType ? `/${task.payType}` : '/h'}
                             </span>
                             <span className="text-[11px] text-slate-500 font-medium mt-0.5">
-                              R$ {estimatedMonth}/mês
+                              {task.payType === 'diária' ? 'Diária garantida' : `R$ ${estimatedMonth}/mês`}
                             </span>
                           </div>
                         </div>

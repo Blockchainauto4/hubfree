@@ -16,9 +16,9 @@ export interface Task {
   title: string;
   company: string;
   locationType: 'workplace' | 'home';
-  category: 'Mecânica' | 'Elétrica' | 'Culinária' | 'Tecnologia' | 'Construção' | 'Artesanato' | 'Serviços' | 'Manutenção e projetos da casa' | 'Serviços automotivos' | string;
+  category: 'Mecânica' | 'Elétrica' | 'Culinária' | 'Tecnologia' | 'Construção' | 'Artesanato' | 'Serviços' | 'Manutenção e projetos da casa' | 'Serviços automotivos' | 'Eventos' | 'Segurança' | string;
   basePay: number; // e.g., 50 (R$)
-  payType: 'hora' | 'vídeo';
+  payType: 'hora' | 'vídeo' | 'diária' | 'evento' | string;
   videoBonus: number; // e.g., 25 (R$)
   bonusCondition: string; // e.g. "Envio em 1080p60 em até 12h"
   hasActiveBonus: boolean;

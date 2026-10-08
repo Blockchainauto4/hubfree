@@ -12,57 +12,77 @@ import { notifyIndexNow } from './indexNowService';
 import { notifyGoogleIndexing } from './googleIndexingService';
 import { getTaskCanonicalPath } from '../utils/slugify';
 
-const STORAGE_KEY_TASKS = 'freelahub_vercel_tasks';
-const STORAGE_KEY_SUBMISSIONS = 'freelahub_vercel_submissions';
-const STORAGE_KEY_USERS = 'freelahub_vercel_users';
+const STORAGE_KEY_TASKS = 'freelahub_tasks';
+const STORAGE_KEY_SUBMISSIONS = 'freelahub_submissions';
+const STORAGE_KEY_USERS = 'freelahub_users';
 
 /**
  * Initializes and seeds default tasks into storage/database.
- * Ensures daily missions with contractor contacts and 24h expiration are loaded.
+ * Rigorously purges demo data and guarantees the real vacancies are loaded.
  */
 export async function seedInitialTasksIfEmpty(): Promise<void> {
+  // Purge legacy storage keys and mock submissions
+  try {
+    ['freelahub_vercel_tasks', 'freelashub_tasks'].forEach((key) => {
+      localStorage.removeItem(key);
+    });
+    ['freelahub_vercel_submissions', 'freelashub_submissions'].forEach((key) => {
+      localStorage.removeItem(key);
+    });
+  } catch {}
+
   try {
     // 1. Try fetching from Vercel Serverless API (/api/tasks)
     const res = await fetch('/api/tasks', { method: 'GET' }).catch(() => null);
     if (res && res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
-        localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(data));
-        return;
+        const cleaned = data.filter(
+          (t: Task) =>
+            !t.id?.startsWith('task-1') &&
+            !t.id?.startsWith('task-2') &&
+            !t.id?.startsWith('task-home-') &&
+            !t.title?.includes('Quadro de Distribuição') &&
+            !t.title?.includes('Pastilhas e Sangria') &&
+            !t.title?.includes('Eletricista') &&
+            !t.title?.includes('Mecânico')
+        );
+        if (cleaned.length > 0) {
+          localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(cleaned));
+          return;
+        }
       }
     }
   } catch (err) {
     // API not responding or in client-only mode
   }
 
-  // 2. Ensure default initial tasks exist and have contractor phone numbers
+  // 2. Ensure real vacancies exist and purge old demo tasks
   const cached = localStorage.getItem(STORAGE_KEY_TASKS);
   if (!cached) {
     localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(INITIAL_TASKS));
   } else {
     try {
       const parsed: Task[] = JSON.parse(cached);
-      // If cached tasks were saved before contractor contacts were added, merge or refresh initial tasks
-      const hasContractorPhone = parsed.some((t) => !!t.contractorPhone);
-      if (!hasContractorPhone) {
-        const merged = parsed.map((item) => {
-          const matchingInit = INITIAL_TASKS.find((init) => init.id === item.id);
-          if (matchingInit) {
-            return {
-              ...item,
-              isDailyMission: matchingInit.isDailyMission,
-              expiresAt: matchingInit.expiresAt,
-              expiresInHours: matchingInit.expiresInHours,
-              contractorPhone: matchingInit.contractorPhone,
-              contractorWhatsapp: matchingInit.contractorWhatsapp,
-              contractorContactName: matchingInit.contractorContactName,
-              contractorRole: matchingInit.contractorRole,
-              missionUrgency: matchingInit.missionUrgency,
-            };
-          }
-          return item;
-        });
-        localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(merged));
+      const hasMockTasks = parsed.some(
+        (t) =>
+          t.id === 'task-1' ||
+          t.id === 'task-2' ||
+          t.id === 'task-home-1' ||
+          t.id?.startsWith('task-') ||
+          t.title?.includes('Quadro de Distribuição') ||
+          t.title?.includes('Pastilhas e Sangria') ||
+          t.title?.includes('Eletricista') ||
+          t.title?.includes('Mecânico')
+      );
+      const hasAllRealVacancies =
+        parsed.some((t) => t.id === 'vaga-barman-vila-clementino-1010') &&
+        parsed.some((t) => t.id === 'vaga-seguranca-jurubatuba-1010') &&
+        parsed.some((t) => t.id === 'vaga-promotora-posto-graal-bandeirantes');
+
+      if (hasMockTasks || !hasAllRealVacancies) {
+        localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(INITIAL_TASKS));
+        localStorage.removeItem(STORAGE_KEY_SUBMISSIONS);
       }
     } catch {
       localStorage.setItem(STORAGE_KEY_TASKS, JSON.stringify(INITIAL_TASKS));
@@ -664,6 +684,30 @@ export async function repairDatabaseInconsistencies(): Promise<DatabaseRepairRes
     details.push('Banco de vagas estava vazio: restaurado conjunto padrão do FreelaHub.');
     fixedCount += INITIAL_TASKS.length;
   }
+
+  // Filter out any legacy demonstration tasks
+  const beforeLen = cachedTasks.length;
+  cachedTasks = cachedTasks.filter(
+    (t) =>
+      !t.id?.startsWith('task-1') &&
+      !t.id?.startsWith('task-2') &&
+      !t.id?.startsWith('task-home-') &&
+      !t.title?.includes('Quadro de Distribuição') &&
+      !t.title?.includes('Pastilhas e Sangria')
+  );
+  if (cachedTasks.length !== beforeLen) {
+    details.push('Removidas vagas de demonstração antigas do banco de dados.');
+    fixedCount += beforeLen - cachedTasks.length;
+  }
+
+  // Ensure all real vacancies are present
+  INITIAL_TASKS.forEach((initTask) => {
+    if (!cachedTasks.some((t) => t.id === initTask.id)) {
+      cachedTasks.push(initTask);
+      details.push(`Adicionada vaga oficial "${initTask.title}".`);
+      fixedCount++;
+    }
+  });
 
   const repaired = cachedTasks.map((t, index) => {
     let changed = false;

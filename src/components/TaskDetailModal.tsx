@@ -533,7 +533,7 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                     required
                     value={freelancerName}
                     onChange={(e) => setFreelancerName(e.target.value)}
-                    placeholder="Ex: Carlos Silva"
+                    placeholder="Ex: Seu Nome Completo"
                     className="w-full bg-slate-950 border border-white/10 rounded-xl px-3.5 py-2.5 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
                   />
                 </div>

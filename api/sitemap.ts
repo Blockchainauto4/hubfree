@@ -19,15 +19,9 @@ function slugify(text: string): string {
 }
 
 const FALLBACK_TASKS = [
-  { id: 'task-home-1', title: 'Manutenção e projetos da casa', city: 'São Paulo', category: 'Manutenção e projetos da casa', updatedAt: '2026-10-07' },
-  { id: 'task-home-2', title: 'Serviços automotivos e elétrica veicular', city: 'São Paulo', category: 'Serviços automotivos', updatedAt: '2026-10-07' },
-  { id: 'task-1', title: 'Montagem de Quadro de Distribuição Elétrica Trifásica', city: 'São Paulo', category: 'Elétrica', updatedAt: '2026-10-07' },
-  { id: 'task-2', title: 'Troca de Pastilhas e Sangria de Freio ABS', city: 'São Paulo', category: 'Mecânica', updatedAt: '2026-10-07' },
-  { id: 'task-3', title: 'Instalação de Tomadas e Cabeamento de Rede', city: 'Campinas', category: 'Elétrica', updatedAt: '2026-10-07' },
-  { id: 'task-4', title: 'Preparo e Sovagem de Pão Rústico de Fermentação Natural', city: 'São Paulo', category: 'Culinária', updatedAt: '2026-10-07' },
-  { id: 'task-5', title: 'Montagem e Teste de Bancada com Microcontrolador', city: 'Santos', category: 'Tecnologia', updatedAt: '2026-10-07' },
-  { id: 'task-6', title: 'Assentamento de Porcelanato Retificado com Nivelador', city: 'Santo André', category: 'Construção', updatedAt: '2026-10-07' },
-  { id: 'task-7', title: 'Pintura & Acabamentos Residenciais', city: 'São Bernardo do Campo', category: 'Construção', updatedAt: '2026-10-07' },
+  { id: 'vaga-barman-vila-clementino-1010', title: 'Barman para Evento - Vila Clementino (Próximo Pq. Ibirapuera)', city: 'São Paulo', category: 'Eventos', updatedAt: '2026-10-08' },
+  { id: 'vaga-seguranca-jurubatuba-1010', title: 'Segurança Masculino - Zona Sul (Jurubatuba)', city: 'São Paulo', category: 'Segurança', updatedAt: '2026-10-08' },
+  { id: 'vaga-promotora-posto-graal-bandeirantes', title: 'Promotora / Recepção de Evento - Posto Graal (Rod. dos Bandeirantes)', city: 'São Paulo', category: 'Eventos', updatedAt: '2026-10-08' },
 ];
 
 export default async function handler(req: any, res: any) {

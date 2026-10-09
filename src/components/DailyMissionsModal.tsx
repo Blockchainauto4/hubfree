@@ -20,7 +20,8 @@ import {
   Search,
   ExternalLink,
   Briefcase,
-  PlayCircle
+  PlayCircle,
+  RotateCcw
 } from 'lucide-react';
 import { Task } from '../types';
 
@@ -29,6 +30,8 @@ interface DailyMissionsModalProps {
   onClose: () => void;
   tasks: Task[];
   onSelectTask: (task: Task) => void;
+  isTikTokUnlocked?: boolean;
+  onOpenTikTokMission?: () => void;
 }
 
 export const DailyMissionsModal: React.FC<DailyMissionsModalProps> = ({
@@ -36,6 +39,8 @@ export const DailyMissionsModal: React.FC<DailyMissionsModalProps> = ({
   onClose,
   tasks,
   onSelectTask,
+  isTikTokUnlocked = true,
+  onOpenTikTokMission,
 }) => {
   if (!isOpen) return null;
 
@@ -357,61 +362,84 @@ export const DailyMissionsModal: React.FC<DailyMissionsModalProps> = ({
                       {contractorRole}
                     </div>
 
-                    {/* Contractor Phone Display */}
-                    <div className="bg-slate-950 p-2.5 rounded-xl border border-white/10 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Phone className="w-4 h-4 text-[#00e575] shrink-0" />
-                        <span className="font-mono text-xs sm:text-sm font-bold text-white tracking-wide truncate">
-                          {contractorPhone}
-                        </span>
+                    {/* Contractor Phone Display & Quick Contact */}
+                    {isTikTokUnlocked ? (
+                      <>
+                        <div className="bg-slate-950 p-2.5 rounded-xl border border-white/10 flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Phone className="w-4 h-4 text-[#00e575] shrink-0" />
+                            <span className="font-mono text-xs sm:text-sm font-bold text-white tracking-wide truncate">
+                              {contractorPhone}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleCopyPhone(task.id, contractorPhone)}
+                            className={`p-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1 ${
+                              copiedPhoneId === task.id
+                                ? 'bg-[#00e575] text-slate-950 font-bold'
+                                : 'bg-white/10 hover:bg-white/15 text-slate-300'
+                            }`}
+                            title="Copiar número de telefone"
+                          >
+                            {copiedPhoneId === task.id ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span className="text-[10px]">Copiado!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span className="text-[10px] hidden sm:inline">Copiar</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        {/* Quick Contact Actions: WhatsApp & Call */}
+                        <div className="grid grid-cols-2 gap-2 pt-1">
+                          <a
+                            href={getWhatsappUrl(task)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="py-2 px-2.5 rounded-xl text-xs font-bold bg-[#00e575] hover:bg-[#00ff87] text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#00e575]/20 hover:scale-[1.02]"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </a>
+
+                          <a
+                            href={`tel:${contractorPhone.replace(/\s+/g, '')}`}
+                            className="py-2 px-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center justify-center gap-1.5 transition-colors border border-white/10"
+                          >
+                            <PhoneCall className="w-3.5 h-3.5 text-[#00e575]" />
+                            <span>Ligar</span>
+                          </a>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-950/40 via-slate-950 to-cyan-950/40 border border-[#fe2c55]/30 space-y-2">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-bold text-white flex items-center gap-1">
+                            <span className="text-[#fe2c55]">🔒</span>
+                            <span>Contato Bloqueado</span>
+                          </span>
+                          <span className="text-[10px] text-amber-300 font-mono">Passe 24h</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onClose();
+                            onOpenTikTokMission?.();
+                          }}
+                          className="w-full py-2 px-3 rounded-lg bg-gradient-to-r from-[#fe2c55] to-[#25f4ee] hover:opacity-95 text-white font-extrabold text-[11px] shadow-sm shadow-[#fe2c55]/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          <RotateCcw className="w-3 h-3 animate-spin [animation-duration:10s]" />
+                          <span>Girar Roda no TikTok (Liberar)</span>
+                        </button>
                       </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleCopyPhone(task.id, contractorPhone)}
-                        className={`p-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer flex items-center gap-1 ${
-                          copiedPhoneId === task.id
-                            ? 'bg-[#00e575] text-slate-950 font-bold'
-                            : 'bg-white/10 hover:bg-white/15 text-slate-300'
-                        }`}
-                        title="Copiar número de telefone"
-                      >
-                        {copiedPhoneId === task.id ? (
-                          <>
-                            <Check className="w-3.5 h-3.5" />
-                            <span className="text-[10px]">Copiado!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span className="text-[10px] hidden sm:inline">Copiar</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Quick Contact Actions: WhatsApp & Call */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      {/* WhatsApp Button */}
-                      <a
-                        href={getWhatsappUrl(task)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="py-2 px-2.5 rounded-xl text-xs font-bold bg-[#00e575] hover:bg-[#00ff87] text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-md shadow-[#00e575]/20 hover:scale-[1.02]"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                        <span>WhatsApp</span>
-                      </a>
-
-                      {/* Direct Phone Call Button */}
-                      <a
-                        href={`tel:${contractorPhone.replace(/\s+/g, '')}`}
-                        className="py-2 px-2.5 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white flex items-center justify-center gap-1.5 transition-colors border border-white/10"
-                      >
-                        <PhoneCall className="w-3.5 h-3.5 text-[#00e575]" />
-                        <span>Ligar</span>
-                      </a>
-                    </div>
+                    )}
 
                     {/* Action to view details or start submission */}
                     <button

@@ -94,5 +94,29 @@ export interface PlatformSettings {
   bingSiteVerification?: string;
   indexNowKey?: string;
   appUrl?: string;
+  tiktokMissionUrl?: string;
+  tiktokRequireUnlock?: boolean;
 }
+
+export interface TikTokMission {
+  id: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  link: string;
+  rewardBadge: string;
+  iconType: 'wheel' | 'video' | 'share';
+  buttonLabel: string;
+  isActive: boolean;
+  order: number;
+}
+
+export interface TikTokAccessState {
+  isUnlocked: boolean;
+  unlockedAt: number | null;
+  expiresAt: number | null;
+  completedMissionId: string | null;
+  remainingMs: number;
+}
+
 

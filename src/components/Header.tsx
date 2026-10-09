@@ -6,7 +6,7 @@ interface HeaderProps {
   onOpenWallet: () => void;
   onOpenHowItWorks: () => void;
   onOpenAuth: (mode: 'register' | 'login') => void;
-  onOpenGemini: () => void;
+  onOpenGemini?: () => void;
   onOpenAdmin: () => void;
   onOpenDailyMissions: () => void;
   onNavigateToCategories?: () => void;
@@ -20,7 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenWallet,
   onOpenHowItWorks,
   onOpenAuth,
-  onOpenGemini,
   onOpenAdmin,
   onOpenDailyMissions,
   onNavigateToCategories,
@@ -94,14 +93,15 @@ export const Header: React.FC<HeaderProps> = ({
               Ativo
             </span>
           </a>
-          <button
-            type="button"
-            onClick={onOpenGemini}
-            className="flex items-center gap-1.5 text-slate-200 hover:text-[#00e575] transition-colors cursor-pointer whitespace-nowrap"
+          <a
+            href="https://wa.me/5511991271914?text=Ol%C3%A1!%20Vim%20pelo%20FreelaHub%20e%20gostaria%20de%20suporte."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-slate-200 hover:text-[#25D366] transition-colors cursor-pointer whitespace-nowrap"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#00e575]" />
-            <span>Assistente Gemini</span>
-          </button>
+            <span className="w-2 h-2 rounded-full bg-[#25D366] animate-pulse" />
+            <span>Suporte WhatsApp</span>
+          </a>
           <a href="#calculadora" className="hover:text-[#00e575] transition-colors whitespace-nowrap">
             Calculadora
           </a>
@@ -127,16 +127,19 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="xl:hidden">Admin</span>
           </button>
 
-          {/* Gemini AI Trigger Button (All screens, responsive compact on small mobile) */}
-          <button
-            type="button"
-            onClick={onOpenGemini}
-            className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-white bg-slate-800/90 hover:bg-slate-700/90 border border-[#00e575]/30 hover:border-[#00e575] rounded-lg transition-all cursor-pointer shadow-sm shadow-[#00e575]/10 shrink-0"
-            title="Abrir Assistente Gemini IA"
+          {/* Suporte WhatsApp Oficial (+55 11 99127-1914) */}
+          <a
+            href="https://wa.me/5511991271914?text=Ol%C3%A1!%20Vim%20pelo%20FreelaHub%20e%20gostaria%20de%20suporte."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 text-xs font-semibold text-white bg-[#128C7E]/80 hover:bg-[#128C7E] border border-[#25D366]/40 hover:border-[#25D366] rounded-lg transition-all cursor-pointer shadow-sm shadow-[#25D366]/20 shrink-0"
+            title="Abrir Suporte WhatsApp Oficial (+55 11 99127-1914)"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#00e575] animate-pulse" />
-            <span className="hidden sm:inline">Gemini IA</span>
-          </button>
+            <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 fill-current text-[#25D366]" aria-hidden="true">
+              <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.07c-.24.67-1.39 1.27-1.92 1.35-.5.08-1.14.12-3.69-.93-3.26-1.34-5.35-4.66-5.51-4.88-.16-.22-1.32-1.75-1.32-3.34 0-1.59.83-2.37 1.13-2.69.29-.32.65-.4.87-.4.21 0 .43.01.62.02.2.01.47-.08.73.55.27.65.92 2.24 1 2.4.08.16.13.35.03.56-.11.22-.16.35-.32.54-.16.19-.34.42-.48.56-.16.16-.33.33-.14.65.19.32.84 1.38 1.8 2.24 1.24 1.1 2.28 1.45 2.61 1.61.32.16.51.13.7-.08.19-.22.81-.95 1.03-1.27.22-.32.43-.27.73-.16.29.11 1.87.88 2.19 1.04.32.16.54.24.62.38.08.14.08.81-.16 1.48z" />
+            </svg>
+            <span className="hidden sm:inline">WhatsApp</span>
+          </a>
 
           {/* Post Task Button for Companies (Desktop) */}
           <button
@@ -298,14 +301,18 @@ export const Header: React.FC<HeaderProps> = ({
 
           {/* Mobile Quick Action Buttons Grid */}
           <div className="pt-3 border-t border-white/10 grid grid-cols-2 gap-2 text-xs font-semibold">
-            <button
-              type="button"
-              onClick={() => handleMobileNavClick(onOpenGemini)}
-              className="p-3 rounded-xl bg-slate-800 border border-[#00e575]/30 flex items-center justify-center gap-2 text-white active:scale-98 transition-transform cursor-pointer"
+            <a
+              href="https://wa.me/5511991271914?text=Ol%C3%A1!%20Vim%20pelo%20FreelaHub%20e%20gostaria%20de%20suporte."
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="p-3 rounded-xl bg-[#128C7E]/70 border border-[#25D366]/40 flex items-center justify-center gap-2 text-white active:scale-98 transition-transform cursor-pointer"
             >
-              <Sparkles className="w-4 h-4 text-[#00e575]" />
-              <span>Gemini IA</span>
-            </button>
+              <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current text-[#25D366]" aria-hidden="true">
+                <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0012.04 2zm5.78 14.07c-.24.67-1.39 1.27-1.92 1.35-.5.08-1.14.12-3.69-.93-3.26-1.34-5.35-4.66-5.51-4.88-.16-.22-1.32-1.75-1.32-3.34 0-1.59.83-2.37 1.13-2.69.29-.32.65-.4.87-.4.21 0 .43.01.62.02.2.01.47-.08.73.55.27.65.92 2.24 1 2.4.08.16.13.35.03.56-.11.22-.16.35-.32.54-.16.19-.34.42-.48.56-.16.16-.33.33-.14.65.19.32.84 1.38 1.8 2.24 1.24 1.1 2.28 1.45 2.61 1.61.32.16.51.13.7-.08.19-.22.81-.95 1.03-1.27.22-.32.43-.27.73-.16.29.11 1.87.88 2.19 1.04.32.16.54.24.62.38.08.14.08.81-.16 1.48z" />
+              </svg>
+              <span>Suporte WhatsApp</span>
+            </a>
 
             <button
               type="button"

@@ -29,12 +29,16 @@ interface TaskDetailModalProps {
   task: Task | null;
   onClose: () => void;
   onSubmitSuccess: (submission: VideoSubmission) => void;
+  isTikTokUnlocked?: boolean;
+  onOpenTikTokMission?: () => void;
 }
 
 export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
   task,
   onClose,
   onSubmitSuccess,
+  isTikTokUnlocked = true,
+  onOpenTikTokMission,
 }) => {
   if (!task) return null;
 
@@ -347,54 +351,76 @@ export const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                   )}
 
                   {/* Phone & Instant Actions */}
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
-                    <div className="sm:col-span-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-3.5 h-3.5 text-[#00e575]" />
-                        <span className="font-mono text-xs font-bold text-white truncate">
-                          {task.contractorPhone}
-                        </span>
+                  {isTikTokUnlocked ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1">
+                      <div className="sm:col-span-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Phone className="w-3.5 h-3.5 text-[#00e575]" />
+                          <span className="font-mono text-xs font-bold text-white truncate">
+                            {task.contractorPhone}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (task.contractorPhone) {
+                              navigator.clipboard.writeText(task.contractorPhone);
+                              setIsPhoneCopied(true);
+                              setTimeout(() => setIsPhoneCopied(false), 2000);
+                            }
+                          }}
+                          className="text-slate-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
+                          title="Copiar Telefone"
+                        >
+                          {isPhoneCopied ? (
+                            <Check className="w-3.5 h-3.5 text-[#00e575]" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
                       </div>
+
+                      <a
+                        href={`https://wa.me/${(task.contractorWhatsapp || task.contractorPhone).replace(/\D/g, '')}?text=${encodeURIComponent(
+                          `Olá! Vi sua vaga no FreelaHub ("${task.title}"). Gostaria de tirar dúvidas e confirmar minha gravação com você!`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="py-2 px-3 rounded-xl text-xs font-bold bg-[#00e575] hover:bg-[#00ff87] text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-sm shadow-[#00e575]/20"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                        <span>WhatsApp Direto</span>
+                      </a>
+
+                      <a
+                        href={`tel:${task.contractorPhone.replace(/\s+/g, '')}`}
+                        className="py-2 px-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white flex items-center justify-center gap-1.5 transition-colors border border-white/10"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5 text-[#00e575]" />
+                        <span>Ligar Agora</span>
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-rose-950/40 via-slate-900 to-cyan-950/40 border border-[#fe2c55]/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                      <div className="text-left space-y-0.5">
+                        <span className="text-[11px] font-extrabold text-white flex items-center gap-1.5">
+                          <span className="text-[#fe2c55]">🔒</span>
+                          <span>Contato Bloqueado (Missão TikTok)</span>
+                        </span>
+                        <p className="text-[11px] text-slate-400">
+                          Gire a roda no TikTok para liberar o botão de WhatsApp e telefones por 24 horas.
+                        </p>
+                      </div>
+
                       <button
                         type="button"
-                        onClick={() => {
-                          if (task.contractorPhone) {
-                            navigator.clipboard.writeText(task.contractorPhone);
-                            setIsPhoneCopied(true);
-                            setTimeout(() => setIsPhoneCopied(false), 2000);
-                          }
-                        }}
-                        className="text-slate-400 hover:text-white p-1 rounded transition-colors cursor-pointer"
-                        title="Copiar Telefone"
+                        onClick={onOpenTikTokMission}
+                        className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-[#fe2c55] to-[#25f4ee] hover:opacity-95 text-white font-extrabold text-xs shadow-md shadow-[#fe2c55]/20 shrink-0 cursor-pointer"
                       >
-                        {isPhoneCopied ? (
-                          <Check className="w-3.5 h-3.5 text-[#00e575]" />
-                        ) : (
-                          <Copy className="w-3.5 h-3.5" />
-                        )}
+                        Girar Roda no TikTok
                       </button>
                     </div>
-
-                    <a
-                      href={`https://wa.me/${(task.contractorWhatsapp || task.contractorPhone).replace(/\D/g, '')}?text=${encodeURIComponent(
-                        `Olá! Vi sua vaga no FreelaHub ("${task.title}"). Gostaria de tirar dúvidas e confirmar minha gravação com você!`
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="py-2 px-3 rounded-xl text-xs font-bold bg-[#00e575] hover:bg-[#00ff87] text-slate-950 flex items-center justify-center gap-1.5 transition-all shadow-sm shadow-[#00e575]/20"
-                    >
-                      <ExternalLink className="w-3.5 h-3.5" />
-                      <span>WhatsApp Direto</span>
-                    </a>
-
-                    <a
-                      href={`tel:${task.contractorPhone.replace(/\s+/g, '')}`}
-                      className="py-2 px-3 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/15 text-white flex items-center justify-center gap-1.5 transition-colors border border-white/10"
-                    >
-                      <PhoneCall className="w-3.5 h-3.5 text-[#00e575]" />
-                      <span>Ligar Agora</span>
-                    </a>
-                  </div>
+                  )}
                 </div>
               )}
 

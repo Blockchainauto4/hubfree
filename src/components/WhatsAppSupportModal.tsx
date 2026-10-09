@@ -1,62 +1,51 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 import React, { useState } from 'react';
-import { MessageSquare, X, Send, CheckCircle2, ShieldCheck, Phone, ExternalLink } from 'lucide-react';
+import { X, ExternalLink, ShieldCheck, Phone, CheckCircle2 } from 'lucide-react';
 
 const SUPPORT_WHATSAPP_NUMBER = '5511991271914';
 const SUPPORT_WHATSAPP_DISPLAY = '+55 (11) 99127-1914';
+const OFFICIAL_WHATSAPP_CHANNEL = 'https://whatsapp.com/channel/0029VbDEoz1CBtx6PIkq4p1t';
 
 export const WhatsAppSupportModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [message, setMessage] = useState('');
-  const [chatLog, setChatLog] = useState<Array<{ sender: 'bot' | 'user'; text: string; time: string }>>([
+
+  const getWhatsAppUrl = (customText?: string) => {
+    const text = encodeURIComponent(
+      customText || 'Olá! Vim pelo FreelaHub e gostaria de suporte com a plataforma e com as vagas.'
+    );
+    return `https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${text}`;
+  };
+
+  const supportTopics = [
     {
-      sender: 'bot',
-      text: `Olá! Sou o atendente do suporte oficial FreelaHub. Você pode conversar diretamente com nossa equipe humana no WhatsApp ${SUPPORT_WHATSAPP_DISPLAY} ou tirar dúvidas rápidas aqui!`,
-      time: '11:00',
+      title: 'Dúvidas sobre Vagas de Hoje',
+      subtitle: 'Barman, Segurança e Promotora',
+      message: 'Olá! Gostaria de tirar dúvidas sobre as vagas disponíveis hoje no FreelaHub.',
     },
-  ]);
-
-  const handleOpenDirectWhatsApp = () => {
-    const text = encodeURIComponent('Olá! Vim pelo FreelaHub e preciso de suporte com a plataforma.');
-    window.open(`https://wa.me/${SUPPORT_WHATSAPP_NUMBER}?text=${text}`, '_blank', 'noopener,noreferrer');
-  };
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim()) return;
-
-    const userText = message.trim();
-    const nowTime = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-    setChatLog((prev) => [...prev, { sender: 'user', text: userText, time: nowTime }]);
-    setMessage('');
-
-    // Automated smart agent response
-    setTimeout(() => {
-      let botResponse = `Nossa equipe técnica confere todos os envios em menos de 2 horas. Para falar diretamente com o suporte humano agora, clique no botão verde do WhatsApp (${SUPPORT_WHATSAPP_DISPLAY}).`;
-      const lower = userText.toLowerCase();
-
-      if (lower.includes('pix') || lower.includes('saque') || lower.includes('pagamento')) {
-        botResponse = 'Os saques PIX são processados diretamente na sua chave cadastrada. Assim que a tarefa diária ou bônus for aprovado, o saldo fica 100% liberado para saque imediato!';
-      } else if (lower.includes('bonus') || lower.includes('bônus')) {
-        botResponse = 'O Bônus em Vídeo é concedido em tarefas com gravação em primeira pessoa (POV) e envio rápido. Você pode faturar até +R$ 35 extras por tarefa!';
-      } else if (lower.includes('suporte') || lower.includes('humano') || lower.includes('atendente') || lower.includes('telefone')) {
-        botResponse = `Você pode falar diretamente com nossa equipe no WhatsApp oficial: ${SUPPORT_WHATSAPP_DISPLAY}. Clique em "Abrir no WhatsApp Oficial" abaixo!`;
-      }
-
-      setChatLog((prev) => [
-        ...prev,
-        {
-          sender: 'bot',
-          text: botResponse,
-          time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-        },
-      ]);
-    }, 600);
-  };
+    {
+      title: 'Missões & Roda TikTok',
+      subtitle: 'Como liberar o contato de contratantes por 24h',
+      message: 'Olá! Preciso de ajuda com a missão da roda do TikTok para liberar os contatos dos contratantes.',
+    },
+    {
+      title: 'Pagamento e Saque PIX',
+      subtitle: 'Comprovantes, liberação e recebimento',
+      message: 'Olá! Tenho uma dúvida sobre recebimento e saque via PIX no FreelaHub.',
+    },
+    {
+      title: 'Falar com Atendente Humano',
+      subtitle: 'Atendimento direto com nossa equipe',
+      message: 'Olá! Gostaria de falar com um atendente humano do FreelaHub agora.',
+    },
+  ];
 
   return (
     <>
-      {/* Floating Button exactly matching screenshot */}
+      {/* Floating WhatsApp Button */}
       <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-center">
         <button
           type="button"
@@ -77,120 +66,103 @@ export const WhatsAppSupportModal: React.FC = () => {
         </span>
       </div>
 
-      {/* Interactive Chat Popup */}
+      {/* WhatsApp Support Direct Modal */}
       {isOpen && (
-        <div className="fixed bottom-18 right-3 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-2xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 max-h-[75dvh] sm:max-h-none animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="fixed bottom-18 right-3 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-1.5rem)] sm:w-96 max-w-sm rounded-3xl bg-slate-900 border border-white/15 shadow-2xl overflow-hidden flex flex-col text-slate-100 animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="bg-[#128C7E] px-4 py-3 flex items-center justify-between text-white shrink-0">
+          <div className="bg-[#128C7E] px-4 py-3.5 flex items-center justify-between text-white shrink-0">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-black text-sm">
                 FH
               </div>
               <div>
-                <div className="text-xs font-bold leading-tight">Suporte FreelaHub</div>
-                <div className="text-[10px] text-emerald-100 flex items-center gap-1">
+                <div className="text-xs font-bold leading-tight">Suporte Oficial FreelaHub</div>
+                <div className="text-[11px] text-emerald-100 flex items-center gap-1 font-mono">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#00ff87] animate-pulse" />
                   {SUPPORT_WHATSAPP_DISPLAY}
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-1">
-              <button
-                type="button"
-                onClick={handleOpenDirectWhatsApp}
-                className="p-1.5 rounded-lg bg-white/15 hover:bg-white/25 text-white cursor-pointer transition-colors"
-                title="Abrir no aplicativo WhatsApp (+55 11 99127-1914)"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded hover:bg-white/10 text-white cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
+
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 rounded-xl hover:bg-white/10 text-white cursor-pointer transition-colors"
+              title="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Body Notice */}
+          <div className="p-4 bg-slate-950 space-y-3">
+            <div className="p-3 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-100 flex items-start gap-2.5">
+              <ShieldCheck className="w-5 h-5 text-[#25D366] shrink-0 mt-0.5" />
+              <div className="text-xs space-y-0.5">
+                <p className="font-bold text-white">Atendimento 100% pelo WhatsApp</p>
+                <p className="text-[11px] text-slate-300 leading-relaxed">
+                  Todo suporte, esclarecimento de dúvidas e confirmação de vagas são realizados diretamente no WhatsApp oficial da nossa equipe.
+                </p>
+              </div>
+            </div>
+
+            {/* Primary Action Button */}
+            <a
+              href={getWhatsAppUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-slate-950 font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-[#25D366]/25 transition-all cursor-pointer text-center"
+            >
+              <Phone className="w-4 h-4 fill-current" />
+              <span>Chamar no WhatsApp (+55 11 99127-1914)</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+
+            {/* Official Channel Link */}
+            <a
+              href={OFFICIAL_WHATSAPP_CHANNEL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer text-center"
+            >
+              <span>Canal Oficial de Vagas no WhatsApp</span>
+              <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+            </a>
+
+            {/* Quick Topic Selection */}
+            <div className="pt-2 border-t border-white/10 space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Escolha o assunto para abrir no WhatsApp:
+              </span>
+
+              <div className="space-y-1.5">
+                {supportTopics.map((topic, idx) => (
+                  <a
+                    key={idx}
+                    href={getWhatsAppUrl(topic.message)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-slate-900 hover:bg-slate-800/90 border border-white/5 hover:border-emerald-500/30 flex items-center justify-between gap-2 transition-all cursor-pointer group"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-white group-hover:text-[#25D366] transition-colors truncate">
+                        {topic.title}
+                      </div>
+                      <div className="text-[10px] text-slate-400 truncate">
+                        {topic.subtitle}
+                      </div>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-slate-600 group-hover:text-[#25D366] shrink-0 transition-colors" />
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Direct WhatsApp Callout Banner */}
-          <div className="bg-emerald-950/90 border-b border-emerald-500/20 px-3 py-2 flex items-center justify-between gap-2 text-[11px] text-emerald-200">
-            <span>Atendimento via WhatsApp: <strong>{SUPPORT_WHATSAPP_DISPLAY}</strong></span>
-            <button
-              type="button"
-              onClick={handleOpenDirectWhatsApp}
-              className="px-2 py-0.5 rounded-md bg-[#25D366] text-slate-950 font-bold hover:bg-[#20ba59] transition-colors cursor-pointer text-[10px]"
-            >
-              Abrir App
-            </button>
+          {/* Footer note */}
+          <div className="px-4 py-2.5 bg-slate-950 border-t border-white/10 text-[10px] text-slate-400 text-center">
+            Resposta rápida de segunda a domingo das 08h às 23h.
           </div>
-
-          {/* Messages Feed */}
-          <div className="p-3.5 sm:p-4 h-64 sm:h-72 overflow-y-auto space-y-3 bg-[#0b1014] text-xs flex-1">
-            {chatLog.map((chat, idx) => (
-              <div
-                key={idx}
-                className={`flex flex-col max-w-[85%] ${
-                  chat.sender === 'user' ? 'ml-auto items-end' : 'mr-auto items-start'
-                }`}
-              >
-                <div
-                  className={`p-3 rounded-2xl leading-relaxed ${
-                    chat.sender === 'user'
-                      ? 'bg-[#005c4b] text-white rounded-br-none'
-                      : 'bg-slate-800 text-slate-200 rounded-bl-none border border-white/5'
-                  }`}
-                >
-                  {chat.text}
-                </div>
-                <span className="text-[9px] text-slate-500 mt-0.5 px-1 font-mono">
-                  {chat.time}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Quick Preset Buttons */}
-          <div className="p-2 bg-slate-950/80 border-t border-white/5 flex gap-1.5 overflow-x-auto text-[10px] no-scrollbar shrink-0">
-            <button
-              type="button"
-              onClick={() => setMessage('Como funciona o bônus em vídeo?')}
-              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
-            >
-              Bônus em Vídeo?
-            </button>
-            <button
-              type="button"
-              onClick={() => setMessage('Quando cai o PIX?')}
-              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
-            >
-              Prazo do PIX?
-            </button>
-            <button
-              type="button"
-              onClick={() => setMessage('Qual suporte de celular usar?')}
-              className="whitespace-nowrap px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 text-slate-300 border border-white/5 active:scale-95 transition-transform"
-            >
-              Suporte de Celular?
-            </button>
-          </div>
-
-          {/* Input Form */}
-          <form onSubmit={handleSendMessage} className="p-2.5 sm:p-3 bg-slate-950 border-t border-white/10 flex gap-2 shrink-0">
-            <input
-              type="text"
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder="Digite sua dúvida..."
-              className="flex-1 bg-slate-900 border border-white/10 rounded-xl px-3 py-2 text-base sm:text-xs text-white focus:outline-none focus:border-[#00e575]"
-            />
-            <button
-              type="submit"
-              className="p-2.5 rounded-xl bg-[#00e575] hover:bg-[#00ff87] text-slate-950 transition-colors cursor-pointer shrink-0 active:scale-95"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
         </div>
       )}
     </>

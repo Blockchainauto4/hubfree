@@ -39,12 +39,23 @@ import {
   ShieldCheck,
   Terminal,
   Database,
-  Globe
+  Globe,
+  Gift,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { AdminAssistantConfig, PlatformSettings, VideoSubmission, Task } from '../types';
 import { notifyIndexNow } from '../services/indexNowService';
 import { getTaskCanonicalPath } from '../utils/slugify';
+import {
+  DEFAULT_TIKTOK_MISSIONS,
+  OFFICIAL_TIKTOK_MISSION_URL,
+} from '../data/defaultTikTokMissions';
+import {
+  unlockTikTokAccess,
+  resetTikTokAccess,
+  getTikTokAccessState,
+  formatRemainingTime,
+} from '../services/tiktokService';
 import {
   checkDatabaseHealth,
   repairDatabaseInconsistencies,
@@ -85,8 +96,8 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  // Active tab: 'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo'
-  const [activeTab, setActiveTab] = useState<'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo'>('postings');
+  // Active tab: 'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo' | 'tiktok'
+  const [activeTab, setActiveTab] = useState<'postings' | 'sync' | 'moderation' | 'business' | 'ai' | 'seo' | 'tiktok'>('postings');
 
   // Success toast state
   const [successToast, setSuccessToast] = useState<string | null>(null);
@@ -507,6 +518,38 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     }
   };
 
+  // TikTok Mission & 24h Access State
+  const [tiktokMissionUrl, setTiktokMissionUrl] = useState(
+    platformSettings.tiktokMissionUrl || OFFICIAL_TIKTOK_MISSION_URL
+  );
+  const [tiktokRequireUnlock, setTiktokRequireUnlock] = useState(
+    platformSettings.tiktokRequireUnlock ?? true
+  );
+  const [currentTikTokAccess, setCurrentTikTokAccess] = useState(getTikTokAccessState());
+
+  const handleSaveTikTokSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    const updatedPlatform: PlatformSettings = {
+      ...platformSettings,
+      tiktokMissionUrl: tiktokMissionUrl.trim(),
+      tiktokRequireUnlock,
+    };
+    onSavePlatformSettings(updatedPlatform);
+    showSuccess('Configurações das Missões do TikTok e regra de 24h salvas com sucesso!');
+  };
+
+  const handleTestUnlock = async () => {
+    const res = await unlockTikTokAccess('tiktok-mission-roda');
+    setCurrentTikTokAccess(res);
+    showSuccess('Acesso de 24 horas liberado com sucesso para testes!');
+  };
+
+  const handleResetTikTok = () => {
+    resetTikTokAccess();
+    setCurrentTikTokAccess(getTikTokAccessState());
+    showSuccess('Expiração resetada! Acesso voltou a ficar bloqueado.');
+  };
+
   // Metrics
   const dailyMissionsCount = tasks.filter((t) => t.isDailyMission || (t.expiresInHours && t.expiresInHours <= 24)).length;
   const totalSlotsCount = tasks.reduce((acc, t) => acc + t.slotsTotal, 0);
@@ -650,6 +693,19 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           >
             <Globe className="w-4 h-4 shrink-0" />
             <span>SEO & Motores de Busca</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab('tiktok')}
+            className={`py-3.5 border-b-2 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer shrink-0 ${
+              activeTab === 'tiktok'
+                ? 'border-[#fe2c55] text-[#fe2c55] font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Gift className="w-4 h-4 shrink-0 text-[#fe2c55]" />
+            <span>Missões TikTok (Acesso 24h)</span>
           </button>
         </div>
 
@@ -1953,6 +2009,146 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
             </div>
           )}
 
+          {/* ======================================================== */}
+          {/* TAB 7: MISSÕES TIKTOK & CONTROLE DE ACESSO 24 HORAS      */}
+          {/* ======================================================== */}
+          {activeTab === 'tiktok' && (
+            <div className="space-y-6">
+              {/* Header Box */}
+              <div className="bg-gradient-to-r from-slate-950 via-[#181124] to-slate-950 border border-[#fe2c55]/30 rounded-2xl p-5 sm:p-6 space-y-3">
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="space-y-1">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#fe2c55]/15 border border-[#fe2c55]/30 text-rose-300 text-xs font-bold uppercase tracking-wider">
+                      <Gift className="w-3.5 h-3.5 text-[#fe2c55]" />
+                      Integração de Missões TikTok
+                    </span>
+                    <h4 className="text-lg sm:text-xl font-bold text-white">
+                      Campanha da Roda Premiada & Liberação de Contatos
+                    </h4>
+                    <p className="text-xs text-slate-300 max-w-2xl leading-relaxed">
+                      Gerencie a URL oficial do TikTok, visualize as 3 missões ativas e controle o ciclo de expiração de 24 horas para visualização das vagas e desbloqueio do contato com os contratantes.
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-slate-900 border border-white/10 text-right">
+                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Status do Meu Acesso</span>
+                    <span className={`text-xs font-bold ${currentTikTokAccess.isUnlocked ? 'text-[#00e575]' : 'text-amber-400'}`}>
+                      {currentTikTokAccess.isUnlocked
+                        ? `Liberado (${formatRemainingTime(currentTikTokAccess.remainingMs)})`
+                        : 'Bloqueado (Pendente Missão)'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Form Settings */}
+              <form onSubmit={handleSaveTikTokSettings} className="bg-slate-950/70 border border-white/10 rounded-2xl p-5 sm:p-6 space-y-5">
+                <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                  Configuração de Parâmetros da Campanha
+                </h5>
+
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                    <span>Link Oficial da Missão TikTok (Girar a Roda)</span>
+                    <span className="text-[11px] text-slate-500 font-mono">Padrão: tiktok.com/d/1/ZS9DgKjpR7ppT-MOm13/</span>
+                  </label>
+                  <input
+                    type="url"
+                    value={tiktokMissionUrl}
+                    onChange={(e) => setTiktokMissionUrl(e.target.value)}
+                    required
+                    placeholder="https://www.tiktok.com/d/1/..."
+                    className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#fe2c55]"
+                  />
+                  <p className="text-[11px] text-slate-400">
+                    Este link será aberto automaticamente quando o freelancer clicar em &quot;Girar a Roda no TikTok&quot;.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-900 border border-white/10">
+                  <div>
+                    <h6 className="text-xs font-bold text-white">Exigir Desbloqueio de 24h para Falar com Contratante</h6>
+                    <p className="text-[11px] text-slate-400 mt-0.5">
+                      Quando ativado, os botões de WhatsApp e visualização de telefone exigem que o usuário gire a roda do TikTok.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={tiktokRequireUnlock}
+                      onChange={(e) => setTiktokRequireUnlock(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#00e575]"></div>
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-between pt-2">
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleTestUnlock}
+                      className="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+                    >
+                      Liberar 24h Agora (Teste)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleResetTikTok}
+                      className="px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-xs font-bold border border-rose-500/20 transition-colors cursor-pointer"
+                    >
+                      Resetar e Bloquear
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-[#00e575] hover:bg-[#00ff87] text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg shadow-[#00e575]/20 cursor-pointer"
+                  >
+                    <Save className="w-4 h-4" />
+                    <span>Salvar Configurações</span>
+                  </button>
+                </div>
+              </form>
+
+              {/* The 3 Active Missions Presentation */}
+              <div className="bg-slate-950/70 border border-white/10 rounded-2xl p-5 space-y-4">
+                <h5 className="text-xs font-bold text-white uppercase tracking-wider">
+                  As 3 Missões TikTok Cadastradas na Plataforma
+                </h5>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {DEFAULT_TIKTOK_MISSIONS.map((m, idx) => (
+                    <div key={m.id} className="p-4 rounded-xl bg-slate-900 border border-white/10 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold text-[#fe2c55] uppercase">
+                          Missão {idx + 1}
+                        </span>
+                        <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-emerald-400 font-semibold">
+                          {m.rewardBadge}
+                        </span>
+                      </div>
+                      <h6 className="text-xs font-bold text-white leading-snug">
+                        {m.title}
+                      </h6>
+                      <p className="text-[11px] text-slate-400 leading-relaxed">
+                        {m.description}
+                      </p>
+                      <a
+                        href={tiktokMissionUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-[11px] font-bold text-[#25f4ee] hover:underline pt-1"
+                      >
+                        <span>Testar Link TikTok</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Modal Footer */}

@@ -22,7 +22,10 @@ import {
   Copy,
   ChevronRight,
   DollarSign,
-  Briefcase
+  Briefcase,
+  RotateCcw,
+  Gift,
+  Lock,
 } from 'lucide-react';
 import { Task } from '../types';
 import { getTaskCanonicalPath, slugify } from '../utils/slugify';
@@ -38,6 +41,9 @@ interface JobDetailPageProps {
   onNavigateToCategory: (category: string) => void;
   onNavigateToCity: (city: string) => void;
   onOpenApplyModal?: (task: Task) => void;
+  isTikTokUnlocked?: boolean;
+  onOpenTikTokMission?: () => void;
+  remainingTimeText?: string;
 }
 
 export const JobDetailPage: React.FC<JobDetailPageProps> = ({
@@ -48,6 +54,9 @@ export const JobDetailPage: React.FC<JobDetailPageProps> = ({
   onNavigateToCategory,
   onNavigateToCity,
   onOpenApplyModal,
+  isTikTokUnlocked = true,
+  onOpenTikTokMission,
+  remainingTimeText,
 }) => {
   const [copiedPhone, setCopiedPhone] = useState(false);
   const [copiedUrl, setCopiedUrl] = useState(false);
@@ -258,12 +267,37 @@ export const JobDetailPage: React.FC<JobDetailPageProps> = ({
                 )}
               </div>
 
+              {/* TikTok 24h Unlock Status Indicator */}
+              {isTikTokUnlocked ? (
+                <div className="flex items-center justify-between px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200/90 text-[11px] text-emerald-800 font-medium">
+                  <span className="flex items-center gap-1.5 font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-[#00a859] animate-pulse" />
+                    Acesso 24h Liberado
+                  </span>
+                  <span className="font-mono font-bold text-[#008744]">
+                    {remainingTimeText || 'Ativo'}
+                  </span>
+                </div>
+              ) : (
+                <div className="p-2.5 rounded-xl bg-gradient-to-r from-rose-50 via-white to-cyan-50 border border-rose-200/80 text-[11px] text-slate-700 flex items-start gap-2">
+                  <Gift className="w-4 h-4 text-[#fe2c55] shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-extrabold text-slate-900 leading-tight">
+                      Gire a roda no TikTok e ganhe recompensas
+                    </p>
+                    <p className="text-[10.5px] text-slate-600 mt-0.5">
+                      Libere o botão para falar com o contratante por 24 horas.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Direct Apply / Contact Button */}
               {isTaskExpired(task) ? (
                 <div className="w-full py-3 bg-slate-200 text-slate-500 font-bold text-sm rounded-xl text-center select-none">
                   Vaga Encerrada
                 </div>
-              ) : (
+              ) : isTikTokUnlocked ? (
                 <>
                   <button
                     type="button"
@@ -285,17 +319,44 @@ export const JobDetailPage: React.FC<JobDetailPageProps> = ({
                     </button>
                   )}
                 </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={onOpenTikTokMission}
+                    className="w-full py-3 bg-gradient-to-r from-[#fe2c55] via-rose-600 to-[#25f4ee] hover:opacity-95 text-white font-extrabold text-xs sm:text-sm rounded-xl transition-all shadow-md shadow-[#fe2c55]/25 flex items-center justify-center gap-2 cursor-pointer active:scale-98"
+                    title="Gire a roda no TikTok para liberar o botão de falar com contratante"
+                  >
+                    <RotateCcw className="w-4 h-4 text-[#25f4ee]" />
+                    <span>Liberar Botão de Contato (Missão TikTok)</span>
+                  </button>
+
+                  <p className="text-[10px] text-center text-slate-500 font-medium">
+                    Complete a missão da roda para liberar o contato por 24 horas.
+                  </p>
+                </>
               )}
 
               {task.contractorPhone && (
-                <button
-                  type="button"
-                  onClick={handleCopyPhone}
-                  className="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedPhone ? 'Telefone Copiado!' : task.contractorPhone}</span>
-                </button>
+                isTikTokUnlocked ? (
+                  <button
+                    type="button"
+                    onClick={handleCopyPhone}
+                    className="w-full py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Copy className="w-3.5 h-3.5" />
+                    <span>{copiedPhone ? 'Telefone Copiado!' : task.contractorPhone}</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={onOpenTikTokMission}
+                    className="w-full py-2 bg-slate-100 hover:bg-slate-200 border border-dashed border-slate-300 text-slate-600 font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <Lock className="w-3.5 h-3.5 text-slate-500" />
+                    <span>Ver telefone do contratante (Girar Roda)</span>
+                  </button>
+                )
               )}
 
               <div className="pt-2 border-t border-slate-200/70 text-[11px] text-slate-500 flex items-center gap-1">

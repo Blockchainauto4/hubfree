@@ -17,17 +17,23 @@ import { FAQSection } from './components/FAQSection';
 import { Footer } from './components/Footer';
 import { WhatsAppSupportModal } from './components/WhatsAppSupportModal';
 import { AuthModal } from './components/AuthModal';
-import { GeminiAssistantModal } from './components/GeminiAssistantModal';
 import { AdminPanelModal } from './components/AdminPanelModal';
+import { AdminArea } from './components/AdminArea';
 import { DailyMissionsModal } from './components/DailyMissionsModal';
 import { FreelancerCategoriesPage } from './components/FreelancerCategoriesPage';
 import { JobDetailPage } from './components/JobDetailPage';
 import { CategoryLandingPage } from './components/CategoryLandingPage';
 import { LegalPage } from './components/LegalPage';
+import { TikTokMissionModal } from './components/TikTokMissionModal';
+import {
+  getTikTokAccessState,
+  subscribeToTikTokAccess,
+  formatRemainingTime,
+} from './services/tiktokService';
 import { getTaskCanonicalPath, extractTaskIdFromSlug, slugify } from './utils/slugify';
 import { INITIAL_TASKS } from './data/initialTasks';
 import { DEFAULT_ASSISTANT_CONFIG, DEFAULT_PLATFORM_SETTINGS } from './data/defaultAdminConfig';
-import { Task, WorkLocationType, VideoSubmission, AdminAssistantConfig, PlatformSettings } from './types';
+import { Task, WorkLocationType, VideoSubmission, AdminAssistantConfig, PlatformSettings, TikTokAccessState } from './types';
 import {
   seedInitialTasksIfEmpty,
   subscribeToTasks,
@@ -114,11 +120,97 @@ export default function App() {
   const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isGeminiOpen, setIsGeminiOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isDailyMissionsOpen, setIsDailyMissionsOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'register' | 'login'>('register');
   const [activeView, setActiveView] = useState<'categories' | 'video'>('categories');
+
+  // TikTok 24-Hour Access & Cronômetro de Permanência de 2 Minutos
+  const TWO_MINUTES_SECONDS = 120; // 2 minutos de permanência
+
+  const getProjectEntryTimestamp = (): number => {
+    if (typeof window === 'undefined') return Date.now();
+    try {
+      const stored = sessionStorage.getItem('freelahub_project_entry_timestamp');
+      if (stored) {
+        const parsed = parseInt(stored, 10);
+        if (!isNaN(parsed) && parsed > 0) return parsed;
+      }
+      const now = Date.now();
+      sessionStorage.setItem('freelahub_project_entry_timestamp', now.toString());
+      return now;
+    } catch {
+      return Date.now();
+    }
+  };
+
+  const calculatePermanenceSecondsLeft = (): number => {
+    const current = getTikTokAccessState();
+    if (current.isUnlocked) return 0;
+    const entry = getProjectEntryTimestamp();
+    const elapsedSec = Math.floor((Date.now() - entry) / 1000);
+    return Math.max(0, TWO_MINUTES_SECONDS - elapsedSec);
+  };
+
+  const formatTimer = (totalSec: number) => {
+    const mins = Math.floor(Math.max(0, totalSec) / 60);
+    const secs = Math.max(0, totalSec) % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const [tiktokAccessState, setTiktokAccessState] = useState<TikTokAccessState>(() => getTikTokAccessState());
+  const [permanenceSecondsLeft, setPermanenceSecondsLeft] = useState<number>(() => calculatePermanenceSecondsLeft());
+  const [isTikTokModalOpen, setIsTikTokModalOpen] = useState<boolean>(() => {
+    const current = getTikTokAccessState();
+    if (current.isUnlocked) return false;
+    // Se a pessoa já completou 2 minutos de permanência no projeto, bloqueia qualquer interação
+    return calculatePermanenceSecondsLeft() <= 0;
+  });
+  const [tiktokModalSource, setTiktokModalSource] = useState<string>('permanence_timer');
+
+  // Cronômetro que mede a permanência da pessoa quando entra no projeto
+  useEffect(() => {
+    // Se já estiver com passe de 24h ativo, não precisa bloquear
+    if (tiktokAccessState.isUnlocked) {
+      setPermanenceSecondsLeft(0);
+      setIsTikTokModalOpen(false);
+      return;
+    }
+
+    const checkPermanence = () => {
+      const remaining = calculatePermanenceSecondsLeft();
+      setPermanenceSecondsLeft(remaining);
+
+      // Depois de dois minutos de permanência, mostra o pop-up e bloqueia qualquer interação
+      if (remaining <= 0) {
+        setIsTikTokModalOpen(true);
+      }
+    };
+
+    checkPermanence();
+    const interval = setInterval(checkPermanence, 1000);
+    return () => clearInterval(interval);
+  }, [tiktokAccessState.isUnlocked]);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToTikTokAccess((newState) => {
+      setTiktokAccessState(newState);
+      if (!newState.isUnlocked) {
+        const remaining = calculatePermanenceSecondsLeft();
+        if (remaining <= 0) {
+          setIsTikTokModalOpen(true);
+        }
+      } else {
+        setIsTikTokModalOpen(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const handleOpenTikTokMission = (source: string = 'button') => {
+    setTiktokModalSource(source);
+    setIsTikTokModalOpen(true);
+  };
 
   // Client-side Router matching window.location.pathname
   const [currentPath, setCurrentPath] = useState<string>(() => {
@@ -295,8 +387,51 @@ export default function App() {
         </div>
       )}
 
+      {/* Banner do Cronômetro de Permanência (2 Minutos de navegação livre antes de bloquear) */}
+      {!tiktokAccessState.isUnlocked && permanenceSecondsLeft > 0 && currentPath !== '/admin' && currentPath !== '/painel-admin' && !isAdminOpen && (
+        <div className="w-full bg-gradient-to-r from-slate-950 via-amber-950/70 to-slate-950 border-b border-amber-500/30 px-3 sm:px-4 py-2 text-xs text-amber-200 flex items-center justify-between gap-2 shadow-sm z-30 sticky top-0 backdrop-blur-md">
+          <div className="flex items-center gap-2 truncate">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping shrink-0" />
+            <span className="truncate">
+              <strong>Cronômetro de Permanência:</strong> {formatTimer(permanenceSecondsLeft)} de navegação livre restante. Após 2 minutos, libere todos os números do contratante por 24 horas.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleOpenTikTokMission('permanence_banner')}
+            className="shrink-0 px-3 py-1 rounded-lg bg-gradient-to-r from-[#fe2c55] to-rose-600 hover:opacity-90 text-white font-bold text-[11px] shadow-sm cursor-pointer transition-transform active:scale-95"
+          >
+            Liberar Contatos (24h)
+          </button>
+        </div>
+      )}
+
       {/* Main Content Area resolved by Client-Side Route */}
       {(() => {
+        // 0. Dedicated Admin Area with Password Gate (/admin ou /painel-admin)
+        if (currentPath === '/admin' || currentPath === '/painel-admin' || isAdminOpen) {
+          return (
+            <AdminArea
+              onBackToSite={() => {
+                setIsAdminOpen(false);
+                navigate('/');
+              }}
+              tasks={tasks}
+              onTaskCreated={handleTaskCreated}
+              onTaskUpdated={handleTaskUpdated}
+              onTaskDeleted={handleTaskDeleted}
+              platformSettings={platformSettings}
+              onSavePlatformSettings={handleSavePlatformSettings}
+              submissions={submissions}
+              onApproveSubmission={(id) => {
+                setSubmissions((prev) =>
+                  prev.map((s) => (s.id === id ? { ...s, status: 'approved' as const } : s))
+                );
+              }}
+            />
+          );
+        }
+
         // 1. Legal Pages
         if (currentPath === '/privacidade') {
           return <LegalPage type="privacidade" onBack={() => navigate('/')} />;
@@ -323,6 +458,9 @@ export default function App() {
                 onNavigateToCategory={(cat) => navigate(`/categorias/${slugify(cat)}`)}
                 onNavigateToCity={(city) => navigate(`/local/sp/${slugify(city)}`)}
                 onOpenApplyModal={(t) => setSelectedTask(t)}
+                isTikTokUnlocked={tiktokAccessState.isUnlocked}
+                onOpenTikTokMission={() => handleOpenTikTokMission('job_detail')}
+                remainingTimeText={formatRemainingTime(tiktokAccessState.remainingMs)}
               />
             );
           }
@@ -394,8 +532,7 @@ export default function App() {
                 onOpenWallet={() => setIsWalletOpen(true)}
                 onOpenHowItWorks={() => setIsHowItWorksOpen(true)}
                 onOpenAuth={handleOpenAuth}
-                onOpenGemini={() => setIsGeminiOpen(true)}
-                onOpenAdmin={() => setIsAdminOpen(true)}
+                onOpenAdmin={() => navigate('/admin')}
                 onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
                 onNavigateToCategories={() => {
                   setActiveView('categories');
@@ -457,21 +594,28 @@ export default function App() {
             onOpenDailyMissions={() => setIsDailyMissionsOpen(true)}
             onOpenWallet={() => setIsWalletOpen(true)}
             onOpenAuth={handleOpenAuth}
-            onOpenAdmin={() => setIsAdminOpen(true)}
+            onOpenAdmin={() => navigate('/admin')}
             currentUser={currentUser}
             walletBalance={walletBalance}
+            isTikTokUnlocked={tiktokAccessState.isUnlocked}
+            onOpenTikTokMission={() => handleOpenTikTokMission('feed')}
+            tiktokRemainingTime={formatRemainingTime(tiktokAccessState.remainingMs)}
           />
         );
       })()}
 
-      {/* Floating WhatsApp Support Widget (+55 11 99127-1914) visible across all views */}
-      <WhatsAppSupportModal />
+      {/* Floating WhatsApp Support Widget (+55 11 99127-1914) visível na área pública */}
+      {currentPath !== '/admin' && currentPath !== '/painel-admin' && (
+        <WhatsAppSupportModal />
+      )}
 
       {/* Interactive Modals */}
       <TaskDetailModal
         task={selectedTask}
         onClose={() => setSelectedTask(null)}
         onSubmitSuccess={handleSubmissionSuccess}
+        isTikTokUnlocked={tiktokAccessState.isUnlocked}
+        onOpenTikTokMission={() => handleOpenTikTokMission('task_modal')}
       />
 
       <CreateTaskModal
@@ -502,13 +646,6 @@ export default function App() {
         onUserLoggedIn={handleUserLoggedIn}
       />
 
-      <GeminiAssistantModal
-        isOpen={isGeminiOpen}
-        onClose={() => setIsGeminiOpen(false)}
-        config={assistantConfig}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-      />
-
       <DailyMissionsModal
         isOpen={isDailyMissionsOpen}
         onClose={() => setIsDailyMissionsOpen(false)}
@@ -516,26 +653,30 @@ export default function App() {
         onSelectTask={(task) => {
           setSelectedTask(task);
         }}
+        isTikTokUnlocked={tiktokAccessState.isUnlocked}
+        onOpenTikTokMission={() => handleOpenTikTokMission('daily_missions')}
       />
 
-      <AdminPanelModal
-        isOpen={isAdminOpen}
-        onClose={() => setIsAdminOpen(false)}
-        assistantConfig={assistantConfig}
-        onSaveAssistantConfig={handleSaveAssistantConfig}
-        platformSettings={platformSettings}
-        onSavePlatformSettings={handleSavePlatformSettings}
-        submissions={submissions}
-        onApproveSubmission={(id) => {
-          setSubmissions((prev) =>
-            prev.map((s) => (s.id === id ? { ...s, status: 'approved' as const } : s))
-          );
-        }}
-        tasks={tasks}
-        onTaskCreated={handleTaskCreated}
-        onTaskUpdated={handleTaskUpdated}
-        onTaskDeleted={handleTaskDeleted}
-      />
+      {/* TikTok Wheel Mission & 24h Unlock Pop-up (Bloqueio após 2 minutos de permanência na área pública) */}
+      {currentPath !== '/admin' && currentPath !== '/painel-admin' && (
+        <TikTokMissionModal
+          isOpen={isTikTokModalOpen}
+          onClose={() => {
+            // Só permite fechar quando o acesso estiver liberado
+            if (tiktokAccessState.isUnlocked) {
+              setIsTikTokModalOpen(false);
+            }
+          }}
+          accessState={tiktokAccessState}
+          onUnlocked={(newState) => {
+            setTiktokAccessState(newState);
+            setIsTikTokModalOpen(false);
+          }}
+          customMissionUrl={platformSettings.tiktokMissionUrl}
+          sourceContext={tiktokModalSource}
+          permanenceSecondsLeft={permanenceSecondsLeft}
+        />
+      )}
     </div>
   );
 }
